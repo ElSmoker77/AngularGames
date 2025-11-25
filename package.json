@@ -2,12 +2,10 @@
   "name": "angular-roguelike",
   "version": "0.0.0",
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
+    "build": "node ./node_modules/@angular/cli/bin/ng build",
+    "start": "node server.js",
+    "watch": "node ./node_modules/@angular/cli/bin/ng serve",
+    "test": "node ./node_modules/@angular/cli/bin/ng test",
     "serve:ssr:angular-roguelike": "node dist/angular-roguelike/server/server.mjs"
   },
   "prettier": {
@@ -39,7 +37,7 @@
   },
   "devDependencies": {
     "@angular/build": "^20.3.7",
-    "@angular/cli": "^20.3.7",
+    "@angular/cli": "^20.3.12",
     "@angular/compiler-cli": "^20.3.0",
     "@types/express": "^5.0.1",
     "@types/jasmine": "~5.1.0",
