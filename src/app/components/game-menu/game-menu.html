@@ -1,0 +1,30 @@
+<div class="menu-wrapper" *ngIf="view === 'none'; else gameView">
+  <h1>Mini Arcade</h1>
+
+  <div class="cards">
+    <button class="card" (click)="open('roguelike')">
+      <h2>Roguelike</h2>
+      <p>Exploración y enemigos (single player).</p>
+    </button>
+
+    <button class="card" (click)="open('duel-local')">
+      <h2>Duelo local</h2>
+      <p>2 jugadores en la misma PC.</p>
+    </button>
+
+    <button class="card" (click)="open('duel-online')">
+      <h2>Duelo online</h2>
+      <p>Juega con un amigo usando un código de sala.</p>
+    </button>
+  </div>
+</div>
+
+<ng-template #gameView>
+  <div class="game-container">
+    <button class="back-btn" (click)="backToMenu()">← Volver al menú</button>
+
+    <app-game *ngIf="view === 'roguelike'"></app-game>
+    <app-duel-local *ngIf="view === 'duel-local'"></app-duel-local>
+    <app-duel-online *ngIf="view === 'duel-online'"></app-duel-online>
+  </div>
+</ng-template>

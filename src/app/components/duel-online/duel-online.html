@@ -1,0 +1,69 @@
+<!-- Si NO estoy en juego, muestro el lobby -->
+<ng-container *ngIf="!(inGame$ | async); else gameTpl">
+  <div class="duel-wrapper">
+    <h1>Duelo online</h1>
+
+    <div class="lobby-card">
+      <label class="field">
+        Tu nombre:
+        <input
+          [(ngModel)]="playerName"
+          (input)="clearServerError()"
+          placeholder="Ej: Maty" />
+      </label>
+
+      <div class="lobby-actions">
+        <!-- Crear sala -->
+        <div class="lobby-section">
+          <h3>Crear sala</h3>
+          <button (click)="createRoom()">Crear</button>
+
+          <p *ngIf="(createdRoomId$ | async) as createdId">
+            Código de sala: <strong>{{ createdId }}</strong><br />
+            Compartilo con tu amigo para que se una.
+          </p>
+        </div>
+
+        <!-- Unirse a sala -->
+        <div class="lobby-section">
+          <h3>Unirse a sala</h3>
+          <input
+            [(ngModel)]="roomCode"
+            (input)="clearServerError()"
+            placeholder="Código (6 caracteres)" />
+          <button (click)="joinRoom()">Unirse</button>
+        </div>
+      </div>
+
+      <p class="error" *ngIf="uiError">{{ uiError }}</p>
+      <p class="error" *ngIf="(error$ | async) as srvErr">{{ srvErr }}</p>
+    </div>
+  </div>
+</ng-container>
+
+<!-- Si estoy en juego, muestro el tablero -->
+<ng-template #gameTpl>
+  <div class="duel-wrapper game-wrapper">
+    <div class="top-info">
+      <div class="left-info">
+        <p *ngIf="(roomId$ | async) as rid">
+          Código de sala: <strong>{{ rid }}</strong>
+        </p>
+        <p *ngIf="(playerId$ | async) as pid">
+          Jugador ID: <strong>{{ pid }}</strong>
+        </p>
+      </div>
+
+      <button type="button" (click)="leaveGame()">
+        Cerrar sala / Volver al menú
+      </button>
+    </div>
+
+    <app-duel-game
+      *ngIf="(playerId$ | async) as pid"
+      [playerId]="pid">
+    </app-duel-game>
+
+    <p class="error" *ngIf="(error$ | async) as srvErr">{{ srvErr }}</p>
+  </div>
+</ng-template>

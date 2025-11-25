@@ -1,0 +1,92 @@
+<div class="duel-wrapper">
+  <h1>Duelo por turnos (Local)</h1>
+
+  <p class="round-label">Ronda {{ state.round }}</p>
+
+  <div class="players-row">
+    <div
+      class="player-card"
+      [ngClass]="getPlayerClass(state.players[0])"
+    >
+      <h2>{{ state.players[0].name }}</h2>
+
+      <div class="stat-row">
+        <span>Vidas:</span>
+        <span class="icon-row">
+          <ng-container *ngFor="let full of getHearts(state.players[0])">
+            <span class="heart" [class.empty]="!full">❤</span>
+          </ng-container>
+        </span>
+      </div>
+
+      <div class="stat-row">
+        <span>Munición:</span>
+        <span class="icon-row">
+          <ng-container *ngFor="let full of getAmmoSlots(state.players[0])">
+            <span class="bullet" [class.empty]="!full">●</span>
+          </ng-container>
+        </span>
+      </div>
+
+      <p>Puntos: {{ state.players[0].score }}</p>
+      <p>Última acción: {{ state.players[0].lastAction || '-' }}</p>
+    </div>
+
+    <div
+      class="player-card"
+      [ngClass]="getPlayerClass(state.players[1])"
+    >
+      <h2>{{ state.players[1].name }}</h2>
+
+      <div class="stat-row">
+        <span>Vidas:</span>
+        <span class="icon-row">
+          <ng-container *ngFor="let full of getHearts(state.players[1])">
+            <span class="heart" [class.empty]="!full">❤</span>
+          </ng-container>
+        </span>
+      </div>
+
+      <div class="stat-row">
+        <span>Munición:</span>
+        <span class="icon-row">
+          <ng-container *ngFor="let full of getAmmoSlots(state.players[1])">
+            <span class="bullet" [class.empty]="!full">●</span>
+          </ng-container>
+        </span>
+      </div>
+
+      <p>Puntos: {{ state.players[1].score }}</p>
+      <p>Última acción: {{ state.players[1].lastAction || '-' }}</p>
+    </div>
+  </div>
+
+  <div class="actions-panel" *ngIf="!state.isRoundOver">
+    <h3>Turno de: {{ state.players[state.currentTurn].name }}</h3>
+    <div class="buttons">
+      <button (click)="doAction('attack')">Atacar</button>
+      <button (click)="doAction('reload')">Recargar</button>
+      <button (click)="doAction('block')">Bloquear</button>
+    </div>
+  </div>
+
+  <div class="gameover" *ngIf="state.isRoundOver">
+    <h2>Ronda terminada</h2>
+    <p *ngIf="winnerName">Ganador de la ronda: {{ winnerName }}</p>
+    <p>
+      Marcador:
+      {{ state.players[0].name }} {{ state.players[0].score }} -
+      {{ state.players[1].score }} {{ state.players[1].name }}
+    </p>
+    <button (click)="nextRound()">Siguiente ronda</button>
+  </div>
+
+  <div class="log-panel">
+    <h3>Log</h3>
+    <ul>
+      <li *ngFor="let entry of state.log | slice:0:10">
+        {{ entry }}
+      </li>
+    </ul>
+  </div>
+</div>

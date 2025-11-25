@@ -1,0 +1,122 @@
+.duel-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #f5f5f5;
+  background: #050608;
+  min-height: 100vh;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.players-row {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.player-card {
+  flex: 1;
+  padding: 1rem;
+  border-radius: 10px;
+  background: #151515;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+  border: 2px solid transparent;
+  transition: transform 0.15s, border-color 0.15s;
+}
+
+.player-card.current {
+  border-color: #4caf50;
+  transform: translateY(-4px);
+}
+
+.actions-panel {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.actions-panel .buttons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.actions-panel button,
+.gameover button {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: none;
+  background: #1976d2;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.actions-panel button:hover,
+.gameover button:hover {
+  filter: brightness(1.1);
+}
+
+.gameover {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.log-panel {
+  margin-top: 1.5rem;
+  background: #111;
+  padding: 1rem;
+  border-radius: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.round-label {
+  text-align: center;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+
+.stat-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.icon-row {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.heart {
+  font-size: 1.3rem;
+  color: #e53935;
+  text-shadow: 0 0 4px rgba(229, 57, 53, 0.7);
+
+  &.empty {
+    color: #444;
+    text-shadow: none;
+    opacity: 0.4;
+  }
+}
+
+.bullet {
+  font-size: 1.3rem;
+  transform: translateY(-1px);
+  color: #ffca28;
+  text-shadow: 0 0 4px rgba(255, 202, 40, 0.7);
+
+  &.empty {
+    color: #444;
+    text-shadow: none;
+    opacity: 0.4;
+  }
+}

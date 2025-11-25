@@ -1,0 +1,31 @@
+<div class="game-wrapper">
+  <div class="board">
+    <div class="row" *ngFor="let row of state.map; trackBy: trackRow">
+      <div
+        class="tile"
+        *ngFor="let tile of row; trackBy: trackTile"
+        [ngClass]="tile.type"
+      >
+        <span *ngIf="tile.type === 'player'">@</span>
+        <span *ngIf="tile.type === 'enemy'">e</span>
+        <span *ngIf="tile.type === 'exit'">▢</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="side-panel">
+    <h3>Stats</h3>
+    <p>HP: {{ state.player.hp }} / {{ state.player.maxHp }}</p>
+    <p>ATK: {{ state.player.attack }}</p>
+    <p>XP: {{ state.player.xp }}</p>
+    <p *ngIf="state.isGameOver">❌ Has muerto. Presiona R para reiniciar.</p>
+    <p *ngIf="state.isWin">✅ ¡Ganaste! Presiona R para jugar de nuevo.</p>
+
+    <h3>Log</h3>
+    <ul class="log">
+      <li *ngFor="let entry of state.log | slice:0:8">
+        {{ entry }}
+      </li>
+    </ul>
+  </div>
+</div>

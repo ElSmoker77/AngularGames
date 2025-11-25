@@ -1,0 +1,247 @@
+/* ===========================
+      ESTILO BASE
+   =========================== */
+
+.duel-wrapper {
+  width: 100%;
+  max-width: 600px;
+  margin: auto;
+  padding: 12px;
+  text-align: center;
+  font-family: "Press Start 2P", system-ui, sans-serif;
+  color: #f5e5c4;
+}
+
+h2 {
+  font-size: 16px;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-bottom: 10px;
+  opacity: 0.8;
+}
+
+/* ===========================
+      TIME BAR
+   =========================== */
+
+.time-bar {
+  width: 100%;
+  height: 10px;
+  border: 2px solid #f5e5c4;
+  margin-top: 4px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.time-bar-fill {
+  height: 100%;
+  background: #ffce6a;
+  transition: width 0.2s linear;
+}
+
+/* ===========================
+     ESTILO DE CARDS
+   =========================== */
+
+.players-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.player-card {
+  background: #1a1d26;
+  padding: 10px;
+  border-radius: 12px;
+  border: 2px solid #b9822b;
+  box-shadow: 0 0 8px #000 inset;
+  font-size: 11px;
+  text-align: left;
+  transition: transform 0.15s ease-in-out;
+  min-height: 140px;
+}
+
+/* Animaciones según la acción */
+.player-card.attack { animation: hit 0.25s ease; }
+.player-card.reload { animation: reload 0.35s ease; }
+.player-card.block  { animation: block 0.25s ease; }
+
+@keyframes hit {
+  0% { transform: translateX(0); }
+  30% { transform: translateX(-6px); }
+  60% { transform: translateX(6px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes reload {
+  0% { filter: brightness(1); }
+  50% { filter: brightness(1.8); }
+  100% { filter: brightness(1); }
+}
+
+@keyframes block {
+  0% { box-shadow: 0 0 4px #fff inset; }
+  100% { box-shadow: 0 0 8px #000 inset; }
+}
+
+/* ===========================
+   VIDA Y MUNICIÓN
+   =========================== */
+
+.icon-row {
+  display: flex;
+  gap: 3px;
+}
+
+.heart, .bullet {
+  font-size: 14px;
+  &.empty {
+    opacity: 0.25;
+  }
+}
+
+/* ===========================
+   BOTONES DE ACCIÓN
+   =========================== */
+
+.actions-panel {
+  margin-top: 10px;
+
+  button {
+    font-family: inherit;
+    font-size: 12px;
+    padding: 10px;
+    margin: 3px;
+    width: 100px;
+    border-radius: 8px;
+    border: 2px solid #b9822b;
+    background: #262b38;
+    color: #ffd98c;
+    cursor: pointer;
+    transition: 0.15s;
+
+    &:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+
+    &:not(:disabled):hover {
+      background: #3a4155;
+      transform: scale(1.05);
+    }
+  }
+}
+
+/* ===========================
+   GAME OVER PANEL
+   =========================== */
+
+.gameover {
+  margin-top: 20px;
+
+  button {
+    margin-top: 12px;
+    padding: 10px 20px;
+    font-family: inherit;
+    border-radius: 8px;
+    background: #ffd98c;
+    border: 2px solid #b9822b;
+    color: #000;
+  }
+}
+
+/* ===========================
+    LOG PANEL
+   =========================== */
+
+.log-panel {
+  margin-top: 20px;
+  background: #101217;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 10px;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+/* ===========================
+  RESPONSIVE - Teléfonos
+   =========================== */
+
+@media (max-width: 480px) {
+  h2 { font-size: 14px; }
+  .status-bar { font-size: 10px; }
+
+  .players-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+  }
+
+  .player-card {
+    padding: 8px;
+    min-height: 120px;
+    font-size: 10px;
+  }
+
+  .actions-panel button {
+    width: 90px;
+    font-size: 10px;
+  }
+
+  .log-panel {
+    font-size: 9px;
+  }
+}
+
+/* SCOREBOARD GRANDE ARRIBA */
+.scoreboard {
+  margin-top: 4px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.score-name {
+  opacity: 0.9;
+}
+
+.score-value {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.score-separator {
+  margin: 0 4px;
+}
+
+/* diferencia visual clara entre tu carta y la del rival */
+
+/* TU CARD (azul verdoso) */
+.my-card {
+  background: #0b1b24;          /* fondo azul oscuro */
+  border-color: #34d399;        /* verde agua tipo highlight */
+  box-shadow: 0 0 8px rgba(52, 211, 153, 0.35);
+}
+
+/* RIVAL CARD (roja) */
+.opponent-card {
+  background: #250c10;          /* fondo rojo oscuro */
+  border-color: #f87171;        /* rojo suave */
+  box-shadow: 0 0 8px rgba(248, 113, 113, 0.35);
+}
+
+
+/* log un poco más grande */
+.log-panel {
+  font-size: 12px;  /* antes era más chico */
+}

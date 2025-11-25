@@ -1,0 +1,215 @@
+/* ===========================
+   CONTENEDOR GENERAL
+   =========================== */
+
+.duel-wrapper {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at top, #20191b 0, #100c10 45%, #050308 100%);
+  color: #f5e5c4;
+  font-family: "Press Start 2P", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* ===========================
+   TITULO
+   =========================== */
+
+h1 {
+  margin-bottom: 12px;
+  text-align: center;
+  font-size: 16px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* ===========================
+   TARJETA DEL LOBBY
+   =========================== */
+
+.lobby-card {
+  width: 100%;
+  max-width: 420px;
+  background: #15141c;
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 0 0 2px #2e2321, 0 10px 25px rgba(0, 0, 0, 0.7);
+  border: 2px solid #b9822b;
+}
+
+/* Campo de nombre / código */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 14px;
+  font-size: 11px;
+
+  input {
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 2px solid #3b2c28;
+    background: #0b0a10;
+    color: #f5e5c4;
+    outline: none;
+    font-size: 11px;
+    font-family: inherit;
+
+    &:focus {
+      border-color: #facc6b;
+      box-shadow: 0 0 0 2px rgba(250, 204, 107, 0.35);
+    }
+  }
+}
+
+/* ===========================
+   BLOQUES CREAR / UNIRSE
+   =========================== */
+
+.lobby-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.lobby-section {
+  flex: 1 1 180px;
+  background: #1a1923;
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid #3b2c28;
+
+  h3 {
+    margin: 0 0 8px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  input {
+    width: 100%;
+    margin-bottom: 6px;
+  }
+
+  button {
+    margin-top: 4px;
+  }
+}
+
+/* ===========================
+   BOTONES
+   =========================== */
+
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 2px solid #b9822b;
+  cursor: pointer;
+  background: linear-gradient(135deg, #fbbf24, #f97316);
+  color: #1c130f;
+  font-weight: 600;
+  font-size: 11px;
+  font-family: inherit;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.1s ease;
+
+  &:hover {
+    filter: brightness(1.05);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.7);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.7);
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.4;
+    box-shadow: none;
+    transform: none;
+  }
+}
+
+/* ===========================
+   ERRORES
+   =========================== */
+
+.error {
+  margin-top: 10px;
+  color: #fecaca;
+  font-size: 10px;
+}
+
+/* ===========================
+   CABECERA EN MODO JUEGO
+   =========================== */
+
+.game-wrapper {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  color: #f5e5c4;
+  font-family: "Press Start 2P", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.top-info {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 10px;
+
+  p {
+    margin: 0;
+  }
+}
+
+/* ===========================
+   RESPONSIVE - MOBILE
+   =========================== */
+
+@media (max-width: 540px) {
+  .duel-wrapper {
+    padding: 10px;
+  }
+
+  h1 {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .lobby-card {
+    padding: 12px;
+    max-width: 100%;
+  }
+
+  .lobby-actions {
+    flex-direction: column;
+  }
+
+  .lobby-section {
+    padding: 8px;
+  }
+
+  .top-info {
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 9px;
+  }
+}

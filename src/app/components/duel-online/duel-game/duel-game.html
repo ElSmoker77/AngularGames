@@ -1,0 +1,149 @@
+<div class="duel-wrapper" *ngIf="state as s; else loading">
+  <h2>Duelo online – Ronda {{ s.round }}</h2>
+
+  <!-- MARCADOR CENTRADO -->
+  <div class="scoreboard">
+    <span class="score-name">{{ s.players[0].name }}</span>
+    <span class="score-value">
+      {{ s.players[0].score }}
+      <span class="score-separator">-</span>
+      {{ s.players[1].score }}
+    </span>
+    <span class="score-name">{{ s.players[1].name }}</span>
+  </div>
+
+  <!-- barra de estado superior (solo timer) -->
+  <div class="status-bar">
+    <div *ngIf="timeLeft !== null && !s.isRoundOver; else noTimer">
+      Tiempo restante: <strong>{{ timeLeft }}s</strong>
+      <div class="time-bar">
+        <div class="time-bar-fill" [style.width.%]="timePercent"></div>
+      </div>
+    </div>
+
+    <ng-template #noTimer>
+      <div *ngIf="s.isRoundOver">Ronda terminada</div>
+    </ng-template>
+  </div>
+
+  <p class="status-text">
+    {{ statusText }}
+  </p>
+
+  <!-- tarjetas de jugadores -->
+  <div class="players-row" *ngIf="myPlayer && opponent">
+    <!-- TU CARTA (color especial) -->
+    <div class="player-card my-card" [ngClass]="myPlayer.lastAction">
+      <h3>{{ myPlayer.name }} (Tú)</h3>
+
+      <div class="stat-row">
+        <span>Vidas:</span>
+        <span class="icon-row">
+          <ng-container *ngFor="let full of getHearts(myPlayer)">
+            <span class="heart" [class.empty]="!full">❤</span>
+          </ng-container>
+        </span>
+      </div>
+
+      <div class="stat-row">
+        <span>Munición:</span>
+        <span class="icon-row">
+          <ng-container *ngFor="let full of getAmmoSlots(myPlayer)">
+            <span class="bullet" [class.empty]="!full">●</span>
+          </ng-container>
+        </span>
+      </div>
+
+      <p>Puntos: {{ myPlayer.score }}</p>
+      <p>Última acción: {{ myPlayer.lastAction || '-' }}</p>
+    </div>
+
+    <!-- CARTA DEL RIVAL -->
+    <div class="player-card opponent-card" [ngClass]="opponent.lastAction">
+      <h3>{{ opponent.name }}</h3>
+
+      <div class="stat-row">
+        <span>Vidas:</span>
+        <span class="icon-row">
+          <ng-container *ngFor="let full of getHearts(opponent)">
+            <span class="heart" [class.empty]="!full">❤</span>
+          </ng-container>
+        </span>
+      </div>
+
+      <div class="stat-row">
+        <span>Munición:</span>
+        <span class="icon-row">
+          <ng-container *ngFor="let full of getAmmoSlots(opponent)">
+            <span class="bullet" [class.empty]="!full">●</span>
+          </ng-container>
+        </span>
+      </div>
+
+      <p>Puntos: {{ opponent.score }}</p>
+      <p>Última acción: {{ opponent.lastAction || '-' }}</p>
+    </div>
+  </div>
+
+  <!-- Botones de acción -->
+  <div class="actions-panel" *ngIf="!s.isRoundOver">
+    <h3>Elegí tu acción</h3>
+    <div class="buttons">
+      <button (click)="doAction('attack')" [disabled]="!canPlay">Atacar</button>
+      <button (click)="doAction('reload')" [disabled]="!canPlay">Recargar</button>
+      <button (click)="doAction('block')" [disabled]="!canPlay">Bloquear</button>
+    </div>
+  </div>
+
+  <!-- Fin de ronda -->
+  <div class="gameover" *ngIf="s.isRoundOver">
+    <h2>Ronda terminada</h2>
+
+    <ng-container *ngIf="s.winnerId !== null; else empate">
+      <p>
+        Ganador de la ronda:
+        {{ getWinnerName(s.winnerId) }}
+      </p>
+    </ng-container>
+
+    <ng-template #empate>
+      <p>La ronda terminó en empate.</p>
+    </ng-template>
+
+    <!-- el marcador ya está arriba, acá solo lo repetimos en texto -->
+    <p>
+      Marcador:
+      {{ s.players[0].name }} {{ s.players[0].score }} -
+      {{ s.players[1].score }} {{ s.players[1].name }}
+    </p>
+
+    <button (click)="nextRound()">Siguiente ronda</button>
+  </div>
+
+  <!-- Log -->
+  <div class="log-panel">
+    <h3>Log</h3>
+    <ul>
+      <li *ngFor="let entry of s.log | slice:0:10">
+        {{ entry }}
+      </li>
+    </ul>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="duel-wrapper">
+    <p>Cargando estado del duelo...</p>
+  </div>
+</ng-template>
+
+
+<!-- Música de fondo (loop) -->
+<audio
+  id="bg-music"
+  src="assets/audio/bg-music.mp3"
+  autoplay
+  loop
+  preload="auto"
+  style="display: none;"
+></audio>
