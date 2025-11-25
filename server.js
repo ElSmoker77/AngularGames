@@ -20,7 +20,7 @@ const io = new Server(server, { cors: { origin: '*' } });
 
 // --- SERVIR ANGULAR COMPILADO ---
 // Según tu build: dist/angular-roguelike
-const distPath = path.join(__dirname, 'dist', 'angular-roguelike');
+const distPath = path.join(__dirname, 'dist', 'angular-roguelike', 'browser');
 app.use(express.static(distPath));
 
 // SPA fallback (todas las rutas -> index.html de Angular)
