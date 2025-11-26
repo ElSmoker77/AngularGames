@@ -257,4 +257,24 @@ export class DuelGameComponent implements OnInit, OnDestroy {
 
     return this.sanitizer.bypassSecurityTrustHtml(text);
   }
+
+
+/** Marca cuáles líneas del log pertenecen al último turno */
+isFromLastTurn(index: number): boolean {
+  if (!this.state?.log) return false;
+
+  const log = this.state.log;
+  const marker = "Nueva elección de acciones"; // 👈 separador de turnos
+
+  // Buscar desde abajo hacia arriba para encontrar el inicio del turno anterior
+  let lastMarkerIndex = log.findIndex(entry =>
+    entry.includes(marker)
+  );
+
+  // Si no hay marcador, no resaltamos nada
+  if (lastMarkerIndex === -1) return false;
+
+  // Todo arriba del marcador pertenece al último turno
+  return index < lastMarkerIndex;
+}
 }

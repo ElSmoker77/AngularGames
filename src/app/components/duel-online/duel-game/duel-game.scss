@@ -10,8 +10,16 @@
 
 h2 {
   font-size: 16px;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   letter-spacing: 1px;
+}
+
+/* Aviso de audio */
+
+.audio-hint {
+  font-size: 9px;
+  margin-bottom: 6px;
+  opacity: 0.7;
 }
 
 /* SCOREBOARD Y TIMER */
@@ -71,6 +79,7 @@ h2 {
 .status-text {
   font-size: 11px;
   margin-bottom: 8px;
+  animation: statusAppear 0.25s ease-out;
 }
 
 /* CARDS */
@@ -90,8 +99,13 @@ h2 {
   box-shadow: 0 0 8px #000 inset;
   font-size: 11px;
   text-align: left;
-  transition: transform 0.15s ease-in-out;
+  transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   min-height: 150px;
+}
+
+.player-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 10px #000 inset, 0 4px 10px rgba(0, 0, 0, 0.6);
 }
 
 .card-header {
@@ -118,12 +132,30 @@ h2 {
   font-size: 9px;
 }
 
+.action-label {
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  opacity: 0.8;
+}
+
 .action-icon {
-  font-size: 18px; /* 👈 icono más grande */
+  font-size: 18px; /* icono más grande */
 }
 
 .action-text {
   text-transform: uppercase;
+}
+
+/* Diferenciar última acción por jugador */
+.my-card .action-badge {
+  background: rgba(52, 211, 153, 0.16);
+  border-color: rgba(52, 211, 153, 0.9);
+}
+
+.opponent-card .action-badge {
+  background: rgba(248, 113, 113, 0.16);
+  border-color: rgba(248, 113, 113, 0.9);
 }
 
 /* Animaciones por acción */
@@ -250,9 +282,11 @@ h2 {
     border: 2px solid #b9822b;
     color: #000;
     cursor: pointer;
+    transition: 0.15s;
 
     &:hover {
       filter: brightness(1.05);
+      transform: translateY(-1px);
     }
   }
 }
@@ -260,13 +294,14 @@ h2 {
 /* LOG */
 
 .log-panel {
-  margin-top: 20px;
+  margin-top: 10px;
   background: #101217;
   padding: 10px;
   border-radius: 10px;
   font-size: 12px;
   max-height: 160px;
   overflow-y: auto;
+  animation: logAppear 0.2s ease-out;
 
   h3 {
     font-size: 11px;
@@ -283,6 +318,20 @@ h2 {
       margin-top: 3px;
     }
   }
+
+}
+/* Resaltar todas las acciones del último turno */
+.log-highlight {
+  background: rgba(250, 204, 21, 0.10);      /* amarillito suave */
+  border-radius: 6px;
+  padding: 4px 6px;
+  box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.25);
+  animation: logFlash 0.3s ease-out;
+}
+
+@keyframes logFlash {
+  0% { background: rgba(250, 204, 21, 0.30); }
+  100% { background: rgba(250, 204, 21, 0.10); }
 }
 
 /* Colores para nombres */
@@ -316,6 +365,10 @@ h2 {
 @media (max-width: 480px) {
   h2 { font-size: 14px; }
 
+  .audio-hint {
+    font-size: 8px;
+  }
+
   .scoreboard {
     font-size: 12px;
   }
@@ -345,3 +398,14 @@ h2 {
   }
 }
 
+/* Animaciones suaves extra */
+
+@keyframes logAppear {
+  0% { opacity: 0; transform: translateY(4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes statusAppear {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}

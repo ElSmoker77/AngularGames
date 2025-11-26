@@ -1,103 +1,137 @@
-<div class="duel-wrapper" *ngIf="state as s; else loading">
+<div class="duel-wrapper" *ngIf="state as s">
+  <!-- Título -->
   <h2>Duelo online – Ronda {{ s.round }}</h2>
 
-  <!-- MARCADOR CENTRADO GRANDE -->
-  <div class="scoreboard">
+
+  <!-- SCOREBOARD -->
+  <div class="scoreboard" *ngIf="s.players.length === 2">
     <span class="score-name">{{ s.players[0].name }}</span>
-    <span class="score-value">
-      {{ s.players[0].score }}
-      <span class="score-separator">-</span>
-      {{ s.players[1].score }}
-    </span>
+    <span class="score-value">{{ s.players[0].score }}</span>
+
+    <span class="score-separator">-</span>
+
+    <span class="score-value">{{ s.players[1].score }}</span>
     <span class="score-name">{{ s.players[1].name }}</span>
   </div>
 
-  <!-- TIMER ANCHO -->
-  <div class="timer-block" *ngIf="timeLeft !== null && !s.isRoundOver; else noTimer">
+  <!-- TIMER -->
+  <div class="timer-block" *ngIf="timeLeft !== null">
     <div class="timer-label">
-      Tiempo restante: <strong>{{ timeLeft }}s</strong>
+      <span *ngIf="timeLeft > 0; else timeEndTpl">
+        Tiempo restante: {{ timeLeft }}s
+      </span>
+      <ng-template #timeEndTpl>
+        <span class="timer-ended">Resolviendo acciones...</span>
+      </ng-template>
     </div>
+
     <div class="time-bar">
       <div class="time-bar-fill" [style.width.%]="timePercent"></div>
     </div>
   </div>
-  <ng-template #noTimer>
-    <div class="timer-block timer-ended" *ngIf="s.isRoundOver">
-      Ronda terminada
-    </div>
-  </ng-template>
 
+  <!-- ESTADO -->
   <p class="status-text">
     {{ statusText }}
   </p>
 
-  <!-- tarjetas de jugadores -->
-  <div class="players-row" *ngIf="myPlayer && opponent">
-
-    <!-- TU CARTA -->
-    <div class="player-card my-card" [ngClass]="myPlayer.lastAction">
+  <!-- CARTAS DE JUGADORES -->
+  <div class="players-row" *ngIf="myPlayer as me">
+    <!-- YO -->
+    <div
+      class="player-card my-card"
+      [ngClass]="me.lastAction || ''"
+    >
       <div class="card-header">
-        <h3>{{ myPlayer.name }}</h3>
-        <div class="action-badge" *ngIf="myPlayer.lastAction as act">
-          <span class="action-icon">{{ getActionIcon(act) }}</span>
-          <span class="action-text">{{ getActionLabel(act) }}</span>
+        <h3>{{ me.name }}</h3>
+
+        <div class="action-badge" *ngIf="me.lastAction">
+          <span class="action-label">Última acción</span>
+          <span class="action-icon">{{ getActionIcon(me.lastAction) }}</span>
+          <span class="action-text">{{ getActionLabel(me.lastAction) }}</span>
         </div>
       </div>
 
       <div class="stat-row">
-        <span>Vidas:</span>
-        <span class="icon-row">
-          <ng-container *ngFor="let full of getHearts(myPlayer)">
-            <span class="heart" [class.empty]="!full">❤</span>
-          </ng-container>
-        </span>
+        <span>Vidas</span>
+        <div class="icon-row">
+          <span
+            *ngFor="let h of getHearts(me)"
+            class="heart"
+            [class.empty]="!h"
+            >♥</span
+          >
+        </div>
       </div>
 
       <div class="stat-row">
-        <span>Munición:</span>
-        <span class="icon-row">
-          <ng-container *ngFor="let full of getAmmoSlots(myPlayer)">
-            <span class="bullet" [class.empty]="!full">●</span>
-          </ng-container>
-        </span>
+        <span>Munición</span>
+        <div class="icon-row">
+          <span
+            *ngFor="let a of getAmmoSlots(me)"
+            class="bullet"
+            [class.empty]="!a"
+            >●</span
+          >
+        </div>
       </div>
-
-      <p class="points">Puntos: {{ myPlayer.score }}</p>
+      <!-- Puntos ya están en el marcador de arriba -->
     </div>
 
-    <!-- CARTA DEL RIVAL -->
-    <div class="player-card opponent-card" [ngClass]="opponent.lastAction">
+    <!-- RIVAL -->
+    <div
+      class="player-card opponent-card"
+      *ngIf="opponent as op"
+      [ngClass]="op.lastAction || ''"
+    >
       <div class="card-header">
-        <h3>{{ opponent.name }}</h3>
-        <div class="action-badge" *ngIf="opponent.lastAction as act">
-          <span class="action-icon">{{ getActionIcon(act) }}</span>
-          <span class="action-text">{{ getActionLabel(act) }}</span>
+        <h3>{{ op.name }}</h3>
+
+        <div class="action-badge" *ngIf="op.lastAction">
+          <span class="action-label">Última acción</span>
+          <span class="action-icon">{{ getActionIcon(op.lastAction) }}</span>
+          <span class="action-text">{{ getActionLabel(op.lastAction) }}</span>
         </div>
       </div>
 
       <div class="stat-row">
-        <span>Vidas:</span>
-        <span class="icon-row">
-          <ng-container *ngFor="let full of getHearts(opponent)">
-            <span class="heart" [class.empty]="!full">❤</span>
-          </ng-container>
-        </span>
+        <span>Vidas</span>
+        <div class="icon-row">
+          <span
+            *ngFor="let h of getHearts(op)"
+            class="heart"
+            [class.empty]="!h"
+            >♥</span
+          >
+        </div>
       </div>
 
       <div class="stat-row">
-        <span>Munición:</span>
-        <span class="icon-row">
-          <ng-container *ngFor="let full of getAmmoSlots(opponent)">
-            <span class="bullet" [class.empty]="!full">●</span>
-          </ng-container>
-        </span>
+        <span>Munición</span>
+        <div class="icon-row">
+          <span
+            *ngFor="let a of getAmmoSlots(op)"
+            class="bullet"
+            [class.empty]="!a"
+            >●</span
+          >
+        </div>
       </div>
-
-      <p class="points">Puntos: {{ opponent.score }}</p>
     </div>
   </div>
 
-  <!-- Botones de acción -->
+  <!-- LOG: debajo de las cards -->
+  <div class="log-panel" *ngIf="s.log?.length">
+    <h3>Log</h3>
+    <ul>
+      <li *ngFor="let entry of s.log; let i = index"
+    [class.log-highlight]="isFromLastTurn(i)">
+        <span [innerHTML]="formatLog(entry)"></span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- BOTONES: al final -->
   <div class="actions-panel" *ngIf="!s.isRoundOver">
     <h3>Elegí tu acción</h3>
     <div class="buttons">
@@ -113,53 +147,15 @@
     </div>
   </div>
 
-  <!-- Fin de ronda -->
+  <!-- FIN DE RONDA -->
   <div class="gameover" *ngIf="s.isRoundOver">
-    <h2>Ronda terminada</h2>
-
-    <ng-container *ngIf="s.winnerId !== null; else empate">
-      <p>
-        Ganador de la ronda:
-        {{ getWinnerName(s.winnerId) }}
-      </p>
-    </ng-container>
-
-    <ng-template #empate>
-      <p>La ronda terminó en empate.</p>
-    </ng-template>
-
-    <p>
-      Marcador:
-      {{ s.players[0].name }} {{ s.players[0].score }} -
-      {{ s.players[1].score }} {{ s.players[1].name }}
-    </p>
+    <h2 *ngIf="s.winnerId === null">Empate</h2>
+    <h2 *ngIf="s.winnerId !== null">
+      {{ getWinnerName(s.winnerId) }} gana la ronda
+    </h2>
 
     <button (click)="nextRound()">Siguiente ronda</button>
   </div>
-
-  <!-- Log -->
-  <div class="log-panel">
-    <h3>Log</h3>
-    <ul>
-      <li
-        *ngFor="let entry of s.log | slice:0:10"
-        [innerHTML]="formatLog(entry)">
-      </li>
-    </ul>
-  </div>
 </div>
 
-<ng-template #loading>
-  <div class="duel-wrapper">
-    <p>Cargando estado del duelo...</p>
-  </div>
-</ng-template>
-
-<audio
-  id="bg-music"
-  src="assets/audio/bg-music.mp3"
-  autoplay
-  loop
-  preload="auto"
-  style="display: none;"
-></audio>
+<audio id="bg-music" src="assets/audio/bg-music.mp3" autoplay loop></audio>
