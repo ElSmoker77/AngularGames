@@ -12,6 +12,78 @@
           placeholder="Ej: Maty" />
       </label>
 
+      <!-- Selección de modo -->
+      <div class="mode-select">
+        <h3>Modo de juego</h3>
+        <select [(ngModel)]="selectedMode">
+          <option value="normal">Normal (sin probabilidades)</option>
+          <option value="tactico">Táctico (con críticos y castigos)</option>
+          <option value="custom">Personalizado</option>
+        </select>
+      </div>
+
+      <!-- Configuración para modo personalizado -->
+      <div class="custom-config" *ngIf="selectedMode === 'custom'">
+        <h3>Configurar modo personalizado</h3>
+
+        <div class="field">
+          <label>
+            Vidas por jugador (1–{{ maxLives }}):
+            <input
+              type="number"
+              [(ngModel)]="customLives"
+              [min]="1"
+              [max]="maxLives" />
+          </label>
+        </div>
+
+        <div class="field">
+          <label>
+            Balas máximas en el cargador (1–{{ maxAmmo }}):
+            <input
+              type="number"
+              [(ngModel)]="customAmmo"
+              [min]="1"
+              [max]="maxAmmo" />
+          </label>
+        </div>
+
+        <div class="field">
+          <label>
+            Probabilidad de disparo preciso (0–50%):
+            <input
+              type="number"
+              [(ngModel)]="customPreciseShotChance"
+              min="0"
+              max="0.5"
+              step="0.01" />
+            <small>Ej: 0.1 = 10%</small>
+          </label>
+        </div>
+
+        <div class="field">
+          <label>
+            Turnos sin atacar antes de perder una bala (0 = desactivado):
+            <input
+              type="number"
+              [(ngModel)]="customTurtleTurns"
+              min="0"
+              max="10" />
+          </label>
+        </div>
+
+        <div class="field">
+          <label>
+            Turnos AFK antes de quedar expuesto (1–10):
+            <input
+              type="number"
+              [(ngModel)]="customAfkLimit"
+              min="1"
+              max="10" />
+          </label>
+        </div>
+      </div>
+
       <div class="lobby-actions">
         <!-- Crear sala -->
         <div class="lobby-section">

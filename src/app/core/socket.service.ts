@@ -64,12 +64,17 @@ export class SocketService {
     });
   }
 
-  createRoom(playerName: string) {
+  createRoom(
+    playerName: string,
+    mode: 'normal' | 'tactico' | 'custom' = 'tactico',
+    customConfig?: any
+  ) {
     this.ensureConnection();
     this.error$.next(null);
     this.roomCreated$.next(null);
     this.joined$.next(false);
-    this.socket!.emit('createRoom', { playerName });
+
+    this.socket!.emit('createRoom', { playerName, mode, customConfig });
   }
 
   joinRoom(roomId: string, playerName: string) {
@@ -91,7 +96,7 @@ export class SocketService {
     this.socket.emit('nextRound', { roomId });
   }
 
-  // 🔹 NUEVO: cerrar sala / desconectar y resetear estado
+  // 🔹 cerrar sala / desconectar y resetear estado
   leaveRoom() {
     if (this.socket) {
       this.socket.disconnect();
