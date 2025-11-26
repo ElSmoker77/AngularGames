@@ -1,7 +1,3 @@
-/* ===========================
-      ESTILO BASE
-   =========================== */
-
 .duel-wrapper {
   width: 100%;
   max-width: 600px;
@@ -18,189 +14,8 @@ h2 {
   letter-spacing: 1px;
 }
 
-.status-bar {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  margin-bottom: 10px;
-  opacity: 0.8;
-}
+/* SCOREBOARD Y TIMER */
 
-/* ===========================
-      TIME BAR
-   =========================== */
-
-.time-bar {
-  width: 100%;
-  height: 10px;
-  border: 2px solid #f5e5c4;
-  margin-top: 4px;
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.time-bar-fill {
-  height: 100%;
-  background: #ffce6a;
-  transition: width 0.2s linear;
-}
-
-/* ===========================
-     ESTILO DE CARDS
-   =========================== */
-
-.players-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-top: 10px;
-}
-
-.player-card {
-  background: #1a1d26;
-  padding: 10px;
-  border-radius: 12px;
-  border: 2px solid #b9822b;
-  box-shadow: 0 0 8px #000 inset;
-  font-size: 11px;
-  text-align: left;
-  transition: transform 0.15s ease-in-out;
-  min-height: 140px;
-}
-
-/* Animaciones según la acción */
-.player-card.attack { animation: hit 0.25s ease; }
-.player-card.reload { animation: reload 0.35s ease; }
-.player-card.block  { animation: block 0.25s ease; }
-
-@keyframes hit {
-  0% { transform: translateX(0); }
-  30% { transform: translateX(-6px); }
-  60% { transform: translateX(6px); }
-  100% { transform: translateX(0); }
-}
-
-@keyframes reload {
-  0% { filter: brightness(1); }
-  50% { filter: brightness(1.8); }
-  100% { filter: brightness(1); }
-}
-
-@keyframes block {
-  0% { box-shadow: 0 0 4px #fff inset; }
-  100% { box-shadow: 0 0 8px #000 inset; }
-}
-
-/* ===========================
-   VIDA Y MUNICIÓN
-   =========================== */
-
-.icon-row {
-  display: flex;
-  gap: 3px;
-}
-
-.heart, .bullet {
-  font-size: 14px;
-  &.empty {
-    opacity: 0.25;
-  }
-}
-
-/* ===========================
-   BOTONES DE ACCIÓN
-   =========================== */
-
-.actions-panel {
-  margin-top: 10px;
-
-  button {
-    font-family: inherit;
-    font-size: 12px;
-    padding: 10px;
-    margin: 3px;
-    width: 100px;
-    border-radius: 8px;
-    border: 2px solid #b9822b;
-    background: #262b38;
-    color: #ffd98c;
-    cursor: pointer;
-    transition: 0.15s;
-
-    &:disabled {
-      opacity: 0.3;
-      cursor: default;
-    }
-
-    &:not(:disabled):hover {
-      background: #3a4155;
-      transform: scale(1.05);
-    }
-  }
-}
-
-/* ===========================
-   GAME OVER PANEL
-   =========================== */
-
-.gameover {
-  margin-top: 20px;
-
-  button {
-    margin-top: 12px;
-    padding: 10px 20px;
-    font-family: inherit;
-    border-radius: 8px;
-    background: #ffd98c;
-    border: 2px solid #b9822b;
-    color: #000;
-  }
-}
-
-/* ===========================
-    LOG PANEL
-   =========================== */
-
-.log-panel {
-  margin-top: 20px;
-  background: #101217;
-  padding: 10px;
-  border-radius: 10px;
-  font-size: 10px;
-  max-height: 160px;
-  overflow-y: auto;
-}
-
-/* ===========================
-  RESPONSIVE - Teléfonos
-   =========================== */
-
-@media (max-width: 480px) {
-  h2 { font-size: 14px; }
-  .status-bar { font-size: 10px; }
-
-  .players-row {
-    grid-template-columns: 1fr 1fr;
-    gap: 5px;
-  }
-
-  .player-card {
-    padding: 8px;
-    min-height: 120px;
-    font-size: 10px;
-  }
-
-  .actions-panel button {
-    width: 90px;
-    font-size: 10px;
-  }
-
-  .log-panel {
-    font-size: 9px;
-  }
-}
-
-/* SCOREBOARD GRANDE ARRIBA */
 .scoreboard {
   margin-top: 4px;
   margin-bottom: 8px;
@@ -224,24 +39,308 @@ h2 {
   margin: 0 4px;
 }
 
-/* diferencia visual clara entre tu carta y la del rival */
+.timer-block {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto 10px;
+  font-size: 11px;
+}
 
-/* TU CARD (azul verdoso) */
+.timer-label {
+  margin-bottom: 4px;
+}
+
+.timer-ended {
+  opacity: 0.8;
+}
+
+.time-bar {
+  width: 100%;
+  height: 10px;
+  border: 2px solid #f5e5c4;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.time-bar-fill {
+  height: 100%;
+  background: #ffce6a;
+  transition: width 0.2s linear;
+}
+
+.status-text {
+  font-size: 11px;
+  margin-bottom: 8px;
+}
+
+/* CARDS */
+
+.players-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.player-card {
+  background: #1a1d26;
+  padding: 10px;
+  border-radius: 12px;
+  border: 2px solid #b9822b;
+  box-shadow: 0 0 8px #000 inset;
+  font-size: 11px;
+  text-align: left;
+  transition: transform 0.15s ease-in-out;
+  min-height: 150px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+
+  h3 {
+    font-size: 11px;
+    margin: 0;
+  }
+}
+
+.action-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(245, 229, 196, 0.5);
+  background: rgba(15, 23, 42, 0.9);
+  font-size: 9px;
+}
+
+.action-icon {
+  font-size: 18px; /* 👈 icono más grande */
+}
+
+.action-text {
+  text-transform: uppercase;
+}
+
+/* Animaciones por acción */
+.player-card.attack { animation: hit 0.25s ease; }
+.player-card.reload { animation: reload 0.35s ease; }
+.player-card.block  { animation: block 0.25s ease; }
+
+@keyframes hit {
+  0% { transform: translateX(0); }
+  30% { transform: translateX(-6px); }
+  60% { transform: translateX(6px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes reload {
+  0% { filter: brightness(1); }
+  50% { filter: brightness(1.8); }
+  100% { filter: brightness(1); }
+}
+
+@keyframes block {
+  0% { box-shadow: 0 0 4px #fff inset; }
+  100% { box-shadow: 0 0 8px #000 inset; }
+}
+
+/* Vida y munición */
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.icon-row {
+  display: flex;
+  gap: 3px;
+}
+
+.heart,
+.bullet {
+  font-size: 14px;
+
+  &.empty {
+    opacity: 0.25;
+  }
+}
+
+.points {
+  margin-top: 6px;
+  font-size: 10px;
+}
+
+/* Tu card (azul/verde) */
 .my-card {
-  background: #0b1b24;          /* fondo azul oscuro */
-  border-color: #34d399;        /* verde agua tipo highlight */
+  background: #0b1b24;
+  border-color: #34d399;
   box-shadow: 0 0 8px rgba(52, 211, 153, 0.35);
 }
 
-/* RIVAL CARD (roja) */
+/* Rival (roja) */
 .opponent-card {
-  background: #250c10;          /* fondo rojo oscuro */
-  border-color: #f87171;        /* rojo suave */
+  background: #250c10;
+  border-color: #f87171;
   box-shadow: 0 0 8px rgba(248, 113, 113, 0.35);
 }
 
+/* BOTONES */
 
-/* log un poco más grande */
+.actions-panel {
+  margin-top: 10px;
+
+  h3 {
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  button {
+    font-family: inherit;
+    font-size: 12px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 2px solid #b9822b;
+    background: #262b38;
+    color: #ffd98c;
+    cursor: pointer;
+    transition: 0.15s;
+    min-width: 110px;
+
+    &:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+
+    &:not(:disabled):hover {
+      background: #3a4155;
+      transform: scale(1.05);
+    }
+  }
+}
+
+/* GAME OVER */
+
+.gameover {
+  margin-top: 20px;
+
+  h2 {
+    margin-bottom: 8px;
+  }
+
+  button {
+    margin-top: 12px;
+    padding: 10px 20px;
+    font-family: inherit;
+    border-radius: 8px;
+    background: #ffd98c;
+    border: 2px solid #b9822b;
+    color: #000;
+    cursor: pointer;
+
+    &:hover {
+      filter: brightness(1.05);
+    }
+  }
+}
+
+/* LOG */
+
 .log-panel {
-  font-size: 12px;  /* antes era más chico */
+  margin-top: 20px;
+  background: #101217;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  max-height: 160px;
+  overflow-y: auto;
+
+  h3 {
+    font-size: 11px;
+    margin-top: 0;
+    margin-bottom: 6px;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li + li {
+      margin-top: 3px;
+    }
+  }
+}
+
+/* Colores para nombres */
+.log-p1 {
+  color: #34d399; // tu
+}
+
+.log-p2 {
+  color: #f87171; // rival
+}
+
+/* Colores / iconos de acción en el log */
+.log-action {
+  font-weight: 700;
+}
+
+.log-action-attack {
+  color: #f97373;
+}
+
+.log-action-reload {
+  color: #38bdf8;
+}
+
+.log-action-block {
+  color: #facc15;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 480px) {
+  h2 { font-size: 14px; }
+
+  .scoreboard {
+    font-size: 12px;
+  }
+
+  .players-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+  }
+
+  .player-card {
+    padding: 8px;
+    min-height: 130px;
+    font-size: 10px;
+  }
+
+  .action-badge {
+    font-size: 8px;
+  }
+
+  .actions-panel button {
+    min-width: 95px;
+    font-size: 10px;
+  }
+
+  .log-panel {
+    font-size: 11px;
+  }
 }

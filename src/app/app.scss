@@ -18,3 +18,28 @@
     filter: brightness(1.1);
   }
 }
+
+/* styles.scss (global) */
+.log-p1 {
+  color: #34d399; /* tu card */
+}
+
+.log-p2 {
+  color: #f87171; /* rival */
+}
+
+.log-action {
+  font-weight: 700;
+}
+
+.log-action-attack {
+  color: #f97373;
+}
+
+.log-action-reload {
+  color: #38bdf8;
+}
+
+.log-action-block {
+  color: #facc15;
+}

@@ -1,16 +1,25 @@
-import { Component, Input, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnDestroy,
+  OnInit,
+  ChangeDetectorRef,
+  ViewEncapsulation
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription, interval } from 'rxjs';
 import { SocketService } from '../../../core/socket.service';
-import { DuelPlayer, DuelState } from '../../../core/models/duel-models';
+import { ActionType, DuelPlayer, DuelState } from '../../../core/models/duel-models';
 import { AudioService } from '../../../core/audio.services';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-duel-game',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './duel-game.html',
-  styleUrls: ['./duel-game.scss']
+  styleUrls: ['./duel-game.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class DuelGameComponent implements OnInit, OnDestroy {
 
@@ -24,17 +33,17 @@ export class DuelGameComponent implements OnInit, OnDestroy {
   private tickSub?: Subscription;
   now = Date.now();
 
-  readonly TURN_SECONDS = 10;
+  readonly TURN_SECONDS = 15; // 👈 15 segundos (match con server)
 
   constructor(
     private socket: SocketService,
     private cdr: ChangeDetectorRef,
-    private audio: AudioService
+    private audio: AudioService,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit() {
     this.stateSub = this.socket.state$.subscribe(st => {
-      // reproducir sonidos según cambios entre prev y nuevo
       this.handleSounds(this.prevState, st);
       this.prevState = this.state;
       this.state = st;
@@ -52,7 +61,7 @@ export class DuelGameComponent implements OnInit, OnDestroy {
     this.tickSub?.unsubscribe();
   }
 
-  // ---- getters ----
+  // ---- getters de jugadores ----
 
   get myPlayer(): DuelPlayer | null {
     if (!this.state || this.playerId == null) return null;
@@ -79,6 +88,15 @@ export class DuelGameComponent implements OnInit, OnDestroy {
     return true;
   }
 
+  get canReload(): boolean {
+    if (!this.canPlay) return false;
+    const me = this.myPlayer;
+    if (!me) return false;
+    return me.ammo < this.maxAmmoDisplay;
+  }
+
+  // ---- timer ----
+
   get timeLeft(): number | null {
     if (!this.state || !this.state.turnEndsAt) return null;
     const diffMs = this.state.turnEndsAt - this.now;
@@ -96,6 +114,8 @@ export class DuelGameComponent implements OnInit, OnDestroy {
     return pct;
   }
 
+  // ---- helpers de UI ----
+
   getHearts(player: DuelPlayer): boolean[] {
     return Array.from({ length: player.maxHp }, (_, i) => i < player.hp);
   }
@@ -103,21 +123,6 @@ export class DuelGameComponent implements OnInit, OnDestroy {
   getAmmoSlots(player: DuelPlayer): boolean[] {
     const filled = Math.min(player.ammo, this.maxAmmoDisplay);
     return Array.from({ length: this.maxAmmoDisplay }, (_, i) => i < filled);
-  }
-
-  // ---- acciones ----
-
- doAction(action: 'attack' | 'reload' | 'block') {
-  if (!this.canPlay) return;
-  this.audio.markUserInteraction();   // 👈 NUEVO
-  this.audio.play('ui');              // 👈 para escuchar click
-  this.socket.chooseAction(action);
-}
-
-
-  nextRound() {
-    this.audio.play('ui');
-    this.socket.nextRound();
   }
 
   get statusText(): string {
@@ -134,6 +139,38 @@ export class DuelGameComponent implements OnInit, OnDestroy {
     return player?.name ?? null;
   }
 
+  getActionIcon(action: ActionType | null): string {
+    switch (action) {
+      case 'attack': return '💥';
+      case 'reload': return '🔄';
+      case 'block': return '🛡️';
+      default: return '';
+    }
+  }
+
+  getActionLabel(action: ActionType | null): string {
+    switch (action) {
+      case 'attack': return 'Atacar';
+      case 'reload': return 'Recargar';
+      case 'block': return 'Bloquear';
+      default: return '-';
+    }
+  }
+
+  // ---- acciones ----
+
+  doAction(action: ActionType) {
+    if (!this.canPlay) return;
+    this.audio.markUserInteraction();
+    this.audio.play('ui');
+    this.socket.chooseAction(action);
+  }
+
+  nextRound() {
+    this.audio.play('ui');
+    this.socket.nextRound();
+  }
+
   // ---- sonidos según cambios de estado ----
 
   private handleSounds(prev: DuelState | null, curr: DuelState | null) {
@@ -142,7 +179,6 @@ export class DuelGameComponent implements OnInit, OnDestroy {
     const myNow = curr.players.find(p => p.id === this.playerId);
     const myPrev = prev?.players.find(p => p.id === this.playerId);
 
-    // sonidos por acción (cuando cambia lastAction)
     if (myNow && myPrev && myNow.lastAction !== myPrev.lastAction) {
       switch (myNow.lastAction) {
         case 'attack':
@@ -157,7 +193,6 @@ export class DuelGameComponent implements OnInit, OnDestroy {
       }
     }
 
-    // sonidos al terminar ronda (cambio isRoundOver false->true)
     if (prev && !prev.isRoundOver && curr.isRoundOver) {
       if (curr.winnerId == null) {
         this.audio.play('draw');
@@ -167,5 +202,44 @@ export class DuelGameComponent implements OnInit, OnDestroy {
         this.audio.play('lose');
       }
     }
+  }
+
+  // ---- Log coloreado (nombres + acciones) ----
+
+  formatLog(entry: any): SafeHtml {
+    let text = String(entry ?? '');
+
+    if (this.state && this.state.players.length >= 2) {
+      const p1Name = this.state.players[0].name;
+      const p2Name = this.state.players[1].name;
+
+      const esc = (str: string) =>
+        str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+      if (p1Name) {
+        text = text.replace(
+          new RegExp(esc(p1Name), 'g'),
+          `<span class="log-p1">${p1Name}</span>`
+        );
+      }
+
+      if (p2Name) {
+        text = text.replace(
+          new RegExp(esc(p2Name), 'g'),
+          `<span class="log-p2">${p2Name}</span>`
+        );
+      }
+    }
+
+    // colorear / icono para acción (palabras clave)
+    text = text
+      .replace(/recarga/gi,    '<span class="log-action log-action-reload">🔄 recarga</span>')
+      .replace(/bloquea/gi,    '<span class="log-action log-action-block">🛡️ bloquea</span>')
+      .replace(/bloquear/gi,   '<span class="log-action log-action-block">🛡️ bloquear</span>')
+      .replace(/disparo/gi,    '<span class="log-action log-action-attack">💥 disparo</span>')
+      .replace(/ataca/gi,      '<span class="log-action log-action-attack">💥 ataca</span>')
+      .replace(/atacar/gi,     '<span class="log-action log-action-attack">💥 atacar</span>');
+
+    return this.sanitizer.bypassSecurityTrustHtml(text);
   }
 }

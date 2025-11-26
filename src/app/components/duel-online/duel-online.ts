@@ -10,7 +10,7 @@ import { DuelGameComponent } from './duel-game/duel-game'; // ajusta el path si 
   standalone: true,
   imports: [CommonModule, FormsModule, DuelGameComponent],
   templateUrl: './duel-online.html',
-  styleUrls: ['./duel-online.scss']
+  styleUrls: ['./duel-online.scss',]
 })
 export class DuelOnlineComponent {
 

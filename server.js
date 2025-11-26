@@ -10,7 +10,7 @@ const cors = require('cors');
 const { Server } = require('socket.io');
 
 // --- CONFIG ---
-const TURN_DURATION_MS = 10_000;
+const TURN_DURATION_MS = 15_000; // 👈 15 segundos
 
 const app = express();
 app.use(cors());
@@ -19,12 +19,10 @@ const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: '*' } });
 
 // --- SERVIR ANGULAR COMPILADO ---
-// Según tu build: dist/angular-roguelike
 const distPath = path.join(__dirname, 'dist', 'angular-roguelike', 'browser');
 app.use(express.static(distPath));
 
-// SPA fallback (todas las rutas -> index.html de Angular)
-// sin patrón, para evitar errores de path-to-regexp en Express 5
+// SPA fallback (todas las rutas -> index.html)
 app.use((req, res) => {
   res.sendFile(path.join(distPath, 'index.html'));
 });
@@ -33,10 +31,8 @@ app.use((req, res) => {
 //   SISTEMA DE SALAS
 // =========================
 
-// roomId -> { state, playersSockets, turnTimer }
-const rooms = {};
-// socketId -> { roomId, playerId }
-const clients = {};
+const rooms = {};   // roomId -> { state, playersSockets, turnTimer }
+const clients = {}; // socketId -> { roomId, playerId }
 
 function generateRoomId() {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -77,7 +73,7 @@ function startTurn(roomId) {
 
   room.turnTimer = setTimeout(() => autoResolveTurn(roomId), TURN_DURATION_MS);
 
-  pushLog(state, `Nueva elección de acciones. Tienes 10 segundos.`);
+  pushLog(state, `Nueva elección de acciones. Tienes 15 segundos.`);
 }
 
 function randomAction(player) {
@@ -179,23 +175,44 @@ function resolveTurn(roomId) {
     state.isRoundOver = true;
     state.winnerId = null;
     pushLog(state, `Ambos jugadores caen. Empate.`);
-  } else if (p1Dead) {
+    io.to(roomId).emit('stateUpdate', state);
+    return;
+  }
+
+  if (p1Dead) {
     p1.hp = 0;
     state.isRoundOver = true;
     state.winnerId = p2.id;
     p2.score++;
     pushLog(state, `${p2.name} gana la ronda.`);
-  } else if (p2Dead) {
+    io.to(roomId).emit('stateUpdate', state);
+    return;
+  }
+
+  if (p2Dead) {
     p2.hp = 0;
     state.isRoundOver = true;
     state.winnerId = p1.id;
     p1.score++;
     pushLog(state, `${p1.name} gana la ronda.`);
-  } else {
-    startTurn(roomId);
+    io.to(roomId).emit('stateUpdate', state);
+    return;
   }
 
-  io.to(roomId).emit('stateUpdate', state);
+  // 👉 NADIE MUERE → mostramos resultado, animaciones,
+  // sin timer, y luego de 2s comenzamos la nueva elección
+  state.turnEndsAt = null;         // oculta barra de tiempo
+  io.to(roomId).emit('stateUpdate', state); // muestra animaciones con lastAction
+
+  setTimeout(() => {
+    const r = rooms[roomId];
+    if (!r) return;                // sala ya no existe
+    const st = r.state;
+    if (st.isRoundOver) return;    // por si algo raro pasó
+
+    startTurn(roomId);
+    io.to(roomId).emit('stateUpdate', st);
+  }, 2000); // 👈 pausa de 2 segundos
 }
 
 // =========================

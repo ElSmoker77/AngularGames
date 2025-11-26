@@ -1,7 +1,7 @@
 <div class="duel-wrapper" *ngIf="state as s; else loading">
   <h2>Duelo online – Ronda {{ s.round }}</h2>
 
-  <!-- MARCADOR CENTRADO -->
+  <!-- MARCADOR CENTRADO GRANDE -->
   <div class="scoreboard">
     <span class="score-name">{{ s.players[0].name }}</span>
     <span class="score-value">
@@ -12,19 +12,20 @@
     <span class="score-name">{{ s.players[1].name }}</span>
   </div>
 
-  <!-- barra de estado superior (solo timer) -->
-  <div class="status-bar">
-    <div *ngIf="timeLeft !== null && !s.isRoundOver; else noTimer">
+  <!-- TIMER ANCHO -->
+  <div class="timer-block" *ngIf="timeLeft !== null && !s.isRoundOver; else noTimer">
+    <div class="timer-label">
       Tiempo restante: <strong>{{ timeLeft }}s</strong>
-      <div class="time-bar">
-        <div class="time-bar-fill" [style.width.%]="timePercent"></div>
-      </div>
     </div>
-
-    <ng-template #noTimer>
-      <div *ngIf="s.isRoundOver">Ronda terminada</div>
-    </ng-template>
+    <div class="time-bar">
+      <div class="time-bar-fill" [style.width.%]="timePercent"></div>
+    </div>
   </div>
+  <ng-template #noTimer>
+    <div class="timer-block timer-ended" *ngIf="s.isRoundOver">
+      Ronda terminada
+    </div>
+  </ng-template>
 
   <p class="status-text">
     {{ statusText }}
@@ -32,9 +33,16 @@
 
   <!-- tarjetas de jugadores -->
   <div class="players-row" *ngIf="myPlayer && opponent">
-    <!-- TU CARTA (color especial) -->
+
+    <!-- TU CARTA -->
     <div class="player-card my-card" [ngClass]="myPlayer.lastAction">
-      <h3>{{ myPlayer.name }} (Tú)</h3>
+      <div class="card-header">
+        <h3>{{ myPlayer.name }}</h3>
+        <div class="action-badge" *ngIf="myPlayer.lastAction as act">
+          <span class="action-icon">{{ getActionIcon(act) }}</span>
+          <span class="action-text">{{ getActionLabel(act) }}</span>
+        </div>
+      </div>
 
       <div class="stat-row">
         <span>Vidas:</span>
@@ -54,13 +62,18 @@
         </span>
       </div>
 
-      <p>Puntos: {{ myPlayer.score }}</p>
-      <p>Última acción: {{ myPlayer.lastAction || '-' }}</p>
+      <p class="points">Puntos: {{ myPlayer.score }}</p>
     </div>
 
     <!-- CARTA DEL RIVAL -->
     <div class="player-card opponent-card" [ngClass]="opponent.lastAction">
-      <h3>{{ opponent.name }}</h3>
+      <div class="card-header">
+        <h3>{{ opponent.name }}</h3>
+        <div class="action-badge" *ngIf="opponent.lastAction as act">
+          <span class="action-icon">{{ getActionIcon(act) }}</span>
+          <span class="action-text">{{ getActionLabel(act) }}</span>
+        </div>
+      </div>
 
       <div class="stat-row">
         <span>Vidas:</span>
@@ -80,8 +93,7 @@
         </span>
       </div>
 
-      <p>Puntos: {{ opponent.score }}</p>
-      <p>Última acción: {{ opponent.lastAction || '-' }}</p>
+      <p class="points">Puntos: {{ opponent.score }}</p>
     </div>
   </div>
 
@@ -89,9 +101,15 @@
   <div class="actions-panel" *ngIf="!s.isRoundOver">
     <h3>Elegí tu acción</h3>
     <div class="buttons">
-      <button (click)="doAction('attack')" [disabled]="!canPlay">Atacar</button>
-      <button (click)="doAction('reload')" [disabled]="!canPlay">Recargar</button>
-      <button (click)="doAction('block')" [disabled]="!canPlay">Bloquear</button>
+      <button (click)="doAction('attack')" [disabled]="!canPlay">
+        💥 Atacar
+      </button>
+      <button (click)="doAction('reload')" [disabled]="!canReload">
+        🔄 Recargar
+      </button>
+      <button (click)="doAction('block')" [disabled]="!canPlay">
+        🛡️ Bloquear
+      </button>
     </div>
   </div>
 
@@ -110,7 +128,6 @@
       <p>La ronda terminó en empate.</p>
     </ng-template>
 
-    <!-- el marcador ya está arriba, acá solo lo repetimos en texto -->
     <p>
       Marcador:
       {{ s.players[0].name }} {{ s.players[0].score }} -
@@ -124,8 +141,9 @@
   <div class="log-panel">
     <h3>Log</h3>
     <ul>
-      <li *ngFor="let entry of s.log | slice:0:10">
-        {{ entry }}
+      <li
+        *ngFor="let entry of s.log | slice:0:10"
+        [innerHTML]="formatLog(entry)">
       </li>
     </ul>
   </div>
@@ -137,8 +155,6 @@
   </div>
 </ng-template>
 
-
-<!-- Música de fondo (loop) -->
 <audio
   id="bg-music"
   src="assets/audio/bg-music.mp3"
