@@ -59,7 +59,48 @@ const MODES = {
     // mirada intimidante
     intimidationHpDiff: 2,
     intimidationAmmoDiff: 2,
-    intimidationMultiplier: 1.5
+    intimidationMultiplier: 1.5,
+
+    // 👇 NUEVO: nervios extra cuando ambos tienen 1 de vida y atacan
+    clutchFailChance: 0.82 ,  // ≈82% de fallar por nervios en ese escenario
+
+
+  },
+
+  // Modo cinemático: táctico + flavor narrativo extra
+  cinematic: {
+    startingAmmo: 1,
+    maxAmmo: 3,
+    maxConsecutiveBlocks: 2,
+    afkLimit: 3,
+    preciseShotChance: 0.10,              // subo un poco (de 0.07 → 0.10)
+    maxTurtleTurnsWithoutAttack: 3,
+    hpPerPlayer: 3,
+    turnDurationMs: TURN_DURATION_MS,
+    turtleDropChance: 0.20,               // subo un poco (de 0.15 → 0.20)
+
+    perfectBlockChance: 0.07,
+    jamChance: 0.07,
+    doubleReloadChance: 0.10,
+    reloadDropChance: 0.03,
+    lastStandChance: 0.06,
+    miracleDodgeChance: 0.04,
+    ghostBulletChance: 0.03,
+    nervousShotMissChance: 0.05,
+    shieldWeakenChance: 0.05,
+
+    intimidationHpDiff: 2,
+    intimidationAmmoDiff: 2,
+    intimidationMultiplier: 1.4,
+
+    // 🎬 extras narrativos / probabilidades especiales
+    cinematicMomentChance: 0.015,          // un pelín más frecuente
+    cinematicFailShotChance: 0.05,         // fallo dramático un poco más común
+    cinematicAccidentalShotChance: 0.02,   // bala loca algo más visible
+    cinematicComboFlavorChance: 0.04,      // frases cuando ambos hacen lo mismo
+
+    // 👇 nuevo: nervios en "1 de vida vs 1 de vida + ambos atacan"
+    clutchNervousFailChance: 0.35          // 35% de que el nerviosismo haga fallar
   }
 };
 
@@ -160,6 +201,124 @@ function getIntimidationFactor(player, other, cfg) {
     return mult;
   }
   return 1;
+}
+
+// =========================
+//  HELPERS CINEMÁTICOS
+// =========================
+
+const CINEMATIC_GLOBAL_LINES = [
+  "Un silencio pesado cae sobre el campo…",
+  "Una brisa fría atraviesa el terreno del duelo.",
+  "Las miradas se cruzan. El siguiente movimiento podría decidirlo todo.",
+  "El mundo parece contener la respiración por un instante.",
+  "La escena se vuelve cinematográfica durante un momento…"
+];
+
+const CINEMATIC_FAIL_SHOT_LINES = [
+  "{ATT} aprieta el gatillo pero falla por centímetros.",
+  "{ATT} dispara demasiado rápido y el tiro se va alto.",
+  "La bala de {ATT} roza el aire sin rumbo.",
+  "{ATT} se pone nervioso y dispara al suelo accidentalmente."
+];
+
+const CINEMATIC_ACCIDENTAL_SELF_LINES = [
+  "¡BANG! Mientras recarga, {ACT} golpea el gatillo y se hiere a sí mismo.",
+  "Una bala perdida de {ACT} rebota mal y le acaba alcanzando.",
+  "{ACT} pierde el control del arma por un segundo y se lleva un disparo en la pierna."
+];
+
+const CINEMATIC_ACCIDENTAL_TARGET_LINES = [
+  "¡BANG! Una bala perdida de {ACT} golpea de lleno a {TGT}.",
+  "Un disparo accidental de {ACT} encuentra a {TGT} en el peor momento.",
+  "La bala loca de {ACT} sale disparada y alcanza a {TGT} de forma inesperada."
+];
+
+const CINEMATIC_ACCIDENTAL_AIR_LINES = [
+  "Una bala perdida de {ACT} vuela hacia el cielo sin rumbo.",
+  "El disparo accidental de {ACT} rebota en una roca y se pierde en la nada.",
+  "{ACT} provoca un tiro loco, pero por suerte no golpea a nadie."
+];
+
+const CINEMATIC_BOTH_ATTACK_LINES = [
+  "Ambos disparan al mismo tiempo; el eco de los tiros resuena por todo el campo.",
+  "{P1} y {P2} abren fuego a la vez, como si se hubieran puesto de acuerdo."
+];
+
+const CINEMATIC_BOTH_RELOAD_LINES = [
+  "{P1} y {P2} recargan al mismo ritmo, como un macabro reflejo.",
+  "Ambos se toman un respiro para recargar. La tensión aumenta."
+];
+
+const CINEMATIC_BOTH_BLOCK_LINES = [
+  "Dos escudos se levantan al mismo tiempo; el duelo entra en un breve impasse.",
+  "{P1} y {P2} se cubren, esperando el próximo intercambio."
+];
+
+function randomFrom(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function maybeCinematicGlobal(state) {
+  const cfg = state.config || MODES[state.mode] || MODES[DEFAULT_MODE];
+  const chance = cfg.cinematicMomentChance || 0;
+  if (chance > 0 && Math.random() < chance) {
+    const line = randomFrom(CINEMATIC_GLOBAL_LINES);
+    pushLog(state, line);
+  }
+}
+
+function handleCinematicAccidentalShot(state, shooter, target) {
+  const cfg = state.config || MODES[state.mode] || MODES[DEFAULT_MODE];
+  const chance = cfg.cinematicAccidentalShotChance || 0;
+  if (chance <= 0 || Math.random() >= chance) return;
+
+  const roll = Math.random();
+  let line;
+
+  if (roll < 0.33) {
+    shooter.hp = Math.max(0, shooter.hp - 1);
+    line = randomFrom(CINEMATIC_ACCIDENTAL_SELF_LINES)
+      .replace(/\{ACT\}/g, shooter.name);
+  } else if (roll < 0.66) {
+    target.hp = Math.max(0, target.hp - 1);
+    line = randomFrom(CINEMATIC_ACCIDENTAL_TARGET_LINES)
+      .replace(/\{ACT\}/g, shooter.name)
+      .replace(/\{TGT\}/g, target.name);
+  } else {
+    line = randomFrom(CINEMATIC_ACCIDENTAL_AIR_LINES)
+      .replace(/\{ACT\}/g, shooter.name);
+  }
+
+  pushLog(state, line);
+}
+
+function maybeCinematicComboFlavors(state, a1, a2) {
+  const cfg = state.config || MODES[state.mode] || MODES[DEFAULT_MODE];
+  const chance = cfg.cinematicComboFlavorChance || 0;
+  if (chance <= 0 || Math.random() >= chance) return;
+
+  const p1 = state.players[0];
+  const p2 = state.players[1];
+  let line = null;
+
+  if (a1 === 'attack' && a2 === 'attack') {
+    line = randomFrom(CINEMATIC_BOTH_ATTACK_LINES)
+      .replace(/\{P1\}/g, p1.name)
+      .replace(/\{P2\}/g, p2.name);
+  } else if (a1 === 'reload' && a2 === 'reload') {
+    line = randomFrom(CINEMATIC_BOTH_RELOAD_LINES)
+      .replace(/\{P1\}/g, p1.name)
+      .replace(/\{P2\}/g, p2.name);
+  } else if (a1 === 'block' && a2 === 'block') {
+    line = randomFrom(CINEMATIC_BOTH_BLOCK_LINES)
+      .replace(/\{P1\}/g, p1.name)
+      .replace(/\{P2\}/g, p2.name);
+  }
+
+  if (line) {
+    pushLog(state, line);
+  }
 }
 
 function startTurn(roomId) {
@@ -267,9 +426,35 @@ function resolveTurn(roomId) {
   state.totalTurns = (state.totalTurns || 0) + 1;
 
   const probabilistic = isProbabilisticMode(cfg);
+  const isCinematic = state.mode === 'cinematic';
 
   const isAfk1 = (a1 === 'afk');
   const isAfk2 = (a2 === 'afk');
+
+  // 👇 Escenario clutch: ambos con 1 de vida y los dos atacan
+  const bothAttackOneHp =
+    probabilistic &&
+    p1.hp === 1 &&
+    p2.hp === 1 &&
+    !isAfk1 &&
+    !isAfk2 &&
+    a1 === 'attack' &&
+    a2 === 'attack';
+
+
+  // 👇 Escenario clutch: ambos con 1 de vida y los dos atacan
+  const clutchNervous =
+    isCinematic &&
+    p1.hp === 1 &&
+    p2.hp === 1 &&
+    a1 === 'attack' &&
+    a2 === 'attack';
+
+  // 🎬 momento cinematográfico global + combos (solo en modo cinematic)
+  if (isCinematic) {
+    maybeCinematicGlobal(state);
+    maybeCinematicComboFlavors(state, a1, a2);
+  }
 
   // Flags: máximo 1 evento loco por jugador por turno
   let specialUsed1 = false;
@@ -359,7 +544,7 @@ function resolveTurn(roomId) {
   }
 
   // --------------------
-  // RECARGA (con tope + recarga doble / caída)
+  // RECARGA (con tope + recarga doble / caída + bala loca cinemática)
   // --------------------
   function handleReload(player, cfg, isAfk, intimidFactor, opponent, playerIndex) {
     if (isAfk) return;
@@ -381,7 +566,7 @@ function resolveTurn(roomId) {
       const baseDrop = cfg.reloadDropChance || 0;
 
       const chanceDouble = baseDouble; // efecto positivo
-      const chanceDrop = baseDrop * intimidFactor; // negativo (más si está intimidado)
+      const chanceDrop = baseDrop * intimidFactor; // negativo
 
       const r = Math.random();
       if (chanceDouble > 0 && r < chanceDouble) {
@@ -390,19 +575,21 @@ function resolveTurn(roomId) {
         pushLog(state, `${player.name} hace una recarga relámpago y carga ${bulletsToAdd} balas.`);
         specialUsed = true;
       } else if (chanceDrop > 0 && r >= chanceDouble && r < chanceDouble + chanceDrop && player.ammo > 0) {
-        // se le cae una bala
         player.ammo = Math.max(0, player.ammo - 1);
         pushLog(state, `${player.name} se apura demasiado y deja caer una bala del cargador.`);
         specialUsed = true;
       } else {
-        // recarga normal
         player.ammo++;
         pushLog(state, `${player.name} recarga. Munición: ${player.ammo}/${maxAmmo}.`);
       }
     } else {
-      // recarga normal
       player.ammo++;
       pushLog(state, `${player.name} recarga. Munición: ${player.ammo}/${maxAmmo}.`);
+    }
+
+    // 🎬 disparo accidental al recargar (bala loca) solo en modo cinematic
+    if (isCinematic) {
+      handleCinematicAccidentalShot(state, player, opponent);
     }
 
     if (playerIndex === 1) specialUsed1 = specialUsed;
@@ -413,8 +600,62 @@ function resolveTurn(roomId) {
   handleReload(p2, cfg, isAfk2 || a2 !== 'reload', intimidFactor2, p1, 2);
 
   // --------------------
-  // ATAQUES + CRÍTICOS + eventos A-F
+  // ATAQUES + CRÍTICOS + eventos
   // --------------------
+
+  function applyDamageWithDefenses({
+    victim,
+    other,
+    damage,
+    cfg,
+    probabilistic,
+    specialUsedVictim,
+    intimidFactorVictim,
+    attackerName,
+    victimIndex
+  }) {
+    let used = specialUsedVictim;
+
+    if (probabilistic && !used) {
+      // B) Esquive milagroso: si aún tiene vida razonable y NO está bloqueando
+      if (!victim.isBlocking && damage > 0) {
+        const baseMiracle = cfg.miracleDodgeChance || 0;
+        const chanceMiracle = baseMiracle; // positivo
+        if (chanceMiracle > 0 && Math.random() < chanceMiracle) {
+          pushLog(state, `Por puro reflejo, ${victim.name} se agacha y la bala pasa rozando.`);
+          used = true;
+          if (victimIndex === 1) specialUsed1 = used;
+          else specialUsed2 = used;
+          return;
+        }
+      }
+    }
+
+    // Si llega aquí, daño entra. Pero antes de matar, intentamos "última oportunidad"
+    const willKill = victim.hp - damage <= 0;
+
+    if (probabilistic && !used && willKill && !victim.lastStandUsed) {
+      const baseLastStand = cfg.lastStandChance || 0;
+      const chanceLastStand = baseLastStand; // positivo
+      if (chanceLastStand > 0 && Math.random() < chanceLastStand) {
+        victim.hp = 1;
+        victim.lastStandUsed = true;
+        pushLog(state, `${victim.name} se niega a caer y resiste el golpe con su última fuerza.`);
+        used = true;
+        if (victimIndex === 1) specialUsed1 = used;
+        else specialUsed2 = used;
+        return;
+      }
+    }
+
+    // daño normal
+    victim.hp -= damage;
+    if (victim.hp < 0) victim.hp = 0;
+
+    if (victimIndex === 1) specialUsed1 = used;
+    else specialUsed2 = used;
+  }
+
 
   function resolveAttack({
     attacker,
@@ -425,7 +666,9 @@ function resolveTurn(roomId) {
     cfg,
     intimidFactor,
     attackerIndex,
-    defenderIndex
+    defenderIndex,
+    isCinematic,
+    clutchNervous
   }) {
     const probabilistic = isProbabilisticMode(cfg);
     let specialUsedAtt = attackerIndex === 1 ? specialUsed1 : specialUsed2;
@@ -451,6 +694,31 @@ function resolveTurn(roomId) {
       return;
     }
 
+        // 🎯 NERVIOS EXTRA cuando ambos tienen 1 de vida y atacan al mismo tiempo
+    if (bothAttackOneHp) {
+      // Si no viene definido en config, usamos 0.82 por defecto
+      const clutchFail = typeof cfg.clutchFailChance === 'number'
+        ? cfg.clutchFailChance
+        : 0.82;
+
+      if (Math.random() < clutchFail) {
+        // Falla por nervios, pero gasta la bala igual
+        attacker.ammo = Math.max(0, attacker.ammo - 1);
+        attacker.consecutiveHits = 0;
+        attacker.turnsWithoutAttack = 0;
+
+        pushLog(
+          state,
+          `${attacker.name} tiembla en el momento decisivo y el disparo se va completamente desviado.`
+        );
+
+        if (attackerIndex === 1) specialUsed1 = specialUsedAtt;
+        else specialUsed2 = specialUsedAtt;
+        return;
+      }
+    }
+
+
     // --- arma encasquillada (jam) ---
     if (probabilistic && !specialUsedAtt) {
       const baseJam = cfg.jamChance || 0;
@@ -459,7 +727,44 @@ function resolveTurn(roomId) {
         pushLog(state, `El arma de ${attacker.name} se encasquilla en el peor momento.`);
         attacker.consecutiveHits = 0;
         specialUsedAtt = true;
-        // no gastamos bala, no hay disparo
+        if (attackerIndex === 1) specialUsed1 = specialUsedAtt;
+        else specialUsed2 = specialUsedAtt;
+        return;
+      }
+    }
+
+    // 🧠 CLUTCH NERVIOSO:
+    // Ambos tienen 1 de vida, ambos atacan y estamos en modo cinemático.
+    // Aquí es mucho más probable que el disparo se vaya por nervios.
+    if (isCinematic && clutchNervous && !specialUsedAtt && preAmmo > 0) {
+      const baseClutch = cfg.clutchNervousFailChance || 0.35;
+      const clutchChance = baseClutch * intimidFactor; // si está intimidado, aún más nervioso
+
+      if (Math.random() < clutchChance) {
+        pushLog(
+          state,
+          `${attacker.name} tiembla en el momento decisivo y el disparo se va completamente desviado.`
+        );
+        attacker.consecutiveHits = 0;
+        attacker.ammo = Math.max(0, attacker.ammo - 1); // bala gastada igual
+        specialUsedAtt = true;
+        if (attackerIndex === 1) specialUsed1 = specialUsedAtt;
+        else specialUsed2 = specialUsedAtt;
+        return;
+      }
+    }
+
+    // 🎬 fallo cinemático de disparo (no por encasquille) solo en modo cinematic
+    if (isCinematic && !specialUsedAtt && preAmmo > 0) {
+      const baseFail = cfg.cinematicFailShotChance || 0.03;
+      const failChance = baseFail * intimidFactor;
+      if (failChance > 0 && Math.random() < failChance) {
+        const line = randomFrom(CINEMATIC_FAIL_SHOT_LINES)
+          .replace(/\{ATT\}/g, attacker.name);
+        pushLog(state, line);
+        attacker.consecutiveHits = 0;
+        attacker.ammo = Math.max(0, attacker.ammo - 1); // bala gastada
+        specialUsedAtt = true;
         if (attackerIndex === 1) specialUsed1 = specialUsedAtt;
         else specialUsed2 = specialUsedAtt;
         return;
@@ -545,6 +850,8 @@ function resolveTurn(roomId) {
           state,
           `${attacker.name} realiza un disparo preciso que atraviesa el escudo de ${defender.name}. Pierde 1 vida.`
         );
+      } else if (isCrit) {
+        pushLog(state, `${attacker.name} realiza un disparo preciso sobre ${defender.name}. Pierde 1 vida.`);
       } else {
         pushLog(state, `${attacker.name} acierta un disparo a ${defender.name}. Pierde 1 vida.`);
       }
@@ -582,64 +889,9 @@ function resolveTurn(roomId) {
     else specialUsed2 = specialUsedDef || specialUsed2;
   }
 
-  // Aplica daño a un jugador teniendo en cuenta:
-  // A) última oportunidad (A)
-  // B) esquive milagroso (B)
-  function applyDamageWithDefenses({
-    victim,
-    other,
-    damage,
-    cfg,
-    probabilistic,
-    specialUsedVictim,
-    intimidFactorVictim,
-    attackerName,
-    victimIndex
-  }) {
-    let used = specialUsedVictim;
-
-    if (probabilistic && !used) {
-      // B) Esquive milagroso: si aún tiene vida razonable y NO está bloqueando
-      if (!victim.isBlocking && damage > 0) {
-        const baseMiracle = cfg.miracleDodgeChance || 0;
-        const chanceMiracle = baseMiracle; // positivo
-        if (chanceMiracle > 0 && Math.random() < chanceMiracle) {
-          pushLog(state, `Por puro reflejo, ${victim.name} se agacha y la bala pasa rozando.`);
-          used = true;
-          if (victimIndex === 1) specialUsed1 = used;
-          else specialUsed2 = used;
-          return;
-        }
-      }
-    }
-
-    // Si llega aquí, daño entra. Pero antes de matar, intentamos "última oportunidad"
-    const willKill = victim.hp - damage <= 0;
-
-    if (probabilistic && !used && willKill && !victim.lastStandUsed) {
-      const baseLastStand = cfg.lastStandChance || 0;
-      const chanceLastStand = baseLastStand; // positivo
-      if (chanceLastStand > 0 && Math.random() < chanceLastStand) {
-        victim.hp = 1;
-        victim.lastStandUsed = true;
-        pushLog(state, `${victim.name} se niega a caer y resiste el golpe con su última fuerza.`);
-        used = true;
-        if (victimIndex === 1) specialUsed1 = used;
-        else specialUsed2 = used;
-        return;
-      }
-    }
-
-    // daño normal
-    victim.hp -= damage;
-    if (victim.hp < 0) victim.hp = 0;
-
-    if (victimIndex === 1) specialUsed1 = used;
-    else specialUsed2 = used;
-  }
 
   // Resolver ataques de ambos jugadores
-  resolveAttack({
+    resolveAttack({
     attacker: p1,
     defender: p2,
     action: a1,
@@ -648,7 +900,9 @@ function resolveTurn(roomId) {
     cfg,
     intimidFactor: intimidFactor1,
     attackerIndex: 1,
-    defenderIndex: 2
+    defenderIndex: 2,
+    isCinematic,
+    clutchNervous
   });
 
   resolveAttack({
@@ -660,7 +914,9 @@ function resolveTurn(roomId) {
     cfg,
     intimidFactor: intimidFactor2,
     attackerIndex: 2,
-    defenderIndex: 1
+    defenderIndex: 1,
+    isCinematic,
+    clutchNervous
   });
 
   // --------------------
