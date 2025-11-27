@@ -3,6 +3,9 @@ import { io, Socket } from 'socket.io-client';
 import { BehaviorSubject } from 'rxjs';
 import { DuelState } from './models/duel-models';
 
+// 👉 Tipo centralizado para los modos
+export type DuelMode = 'normal' | 'tactico' | 'custom' | 'cinematic';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -66,7 +69,7 @@ export class SocketService {
 
   createRoom(
     playerName: string,
-    mode: 'normal' | 'tactico' | 'custom' = 'tactico',
+    mode: DuelMode = 'tactico',   // 👈 ahora acepta también "cinematic"
     customConfig?: any
   ) {
     this.ensureConnection();

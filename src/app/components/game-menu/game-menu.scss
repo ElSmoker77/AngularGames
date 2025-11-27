@@ -1,10 +1,32 @@
+/* ===========================
+   CONTENEDOR DEL MENÚ
+   =========================== */
+
 .menu-wrapper {
   min-height: 100vh;
   background: #050608;
   color: #f5f5f5;
-  padding: 2rem;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
   text-align: center;
 }
+
+.title {
+  font-size: 28px;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+/* ===========================
+   CARDS
+   =========================== */
 
 .cards {
   display: flex;
@@ -18,36 +40,139 @@
   width: 230px;
   padding: 1.5rem;
   border-radius: 1rem;
-  border: none;
+  border: 1px solid rgba(148, 163, 184, 0.25);
   background: #151515;
   color: inherit;
   text-align: left;
   cursor: pointer;
-  box-shadow: 0 0 10px rgba(0,0,0,0.6);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease,
+    background 0.15s ease;
 }
 
 .card h2 {
-  margin-bottom: .5rem;
+  margin: 0 0 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+
+.card p {
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.8;
 }
 
 .card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 0 14px rgba(0,0,0,0.8);
+  box-shadow: 0 0 14px rgba(0, 0, 0, 0.8);
 }
 
+/* Estado: PROTOTIPO */
+
+.card--proto {
+  border-color: rgba(251, 191, 36, 0.5);
+}
+
+.card--proto:hover {
+  background: #1f160c;
+}
+
+/* Estado: BETA */
+
+.card--beta {
+  border-color: rgba(56, 189, 248, 0.6);
+}
+
+.card--beta:hover {
+  background: #071822;
+}
+
+/* Tag/badge de estado */
+
+.tag {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  white-space: nowrap;
+}
+
+.tag--proto {
+  background: rgba(251, 191, 36, 0.12);
+  color: #facc15;
+  border: 1px solid rgba(250, 204, 21, 0.8);
+}
+
+.tag--beta {
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.9);
+}
+
+/* ===========================
+   CONTENEDOR DEL JUEGO
+   =========================== */
+
 .game-container {
+  /* No card, solo espacio para que el juego ocupe toda la pantalla */
   min-height: 100vh;
   background: #050608;
   color: #f5f5f5;
-  padding: 1rem;
+  padding: 0;
 }
 
+/* ===========================
+   BOTÓN VOLVER (FLOTANTE)
+   =========================== */
+
 .back-btn {
-  margin-bottom: 1rem;
-  padding: .4rem .8rem;
-  border-radius: .5rem;
-  border: none;
-  background: #444;
-  color: #fff;
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 1000;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  background: rgba(15, 23, 42, 0.9);
+  color: #f9fafb;
   cursor: pointer;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  backdrop-filter: blur(8px);
+  transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+.back-btn:hover {
+  background: rgba(30, 64, 175, 0.95);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.9);
+}
+
+/* ===========================
+   RESPONSIVE
+   =========================== */
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 22px;
+  }
+
+  .subtitle {
+    font-size: 12px;
+  }
+
+  .cards {
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 320px;
+  }
 }

@@ -1,19 +1,32 @@
 <div class="menu-wrapper" *ngIf="view === 'none'; else gameView">
-  <h1>Mini Arcade</h1>
+  <h1 class="title">Mini Arcade</h1>
+  <p class="subtitle">Elige un modo para jugar</p>
 
   <div class="cards">
-    <button class="card" (click)="open('roguelike')">
-      <h2>Roguelike</h2>
-      <p>Exploración y enemigos (single player).</p>
+    <!-- Roguelike -->
+    <button class="card card--proto" (click)="open('roguelike')">
+      <h2>
+        Roguelike
+        <span class="tag tag--proto">Prototipo</span>
+      </h2>
+      <p>Exploración y enemigos (single player solo PC).</p>
     </button>
 
-    <button class="card" (click)="open('duel-local')">
-      <h2>Duelo local</h2>
-      <p>2 jugadores en la misma PC.</p>
+    <!-- Duelo local -->
+    <button class="card card--proto" (click)="open('duel-local')">
+      <h2>
+        Duelo local
+        <span class="tag tag--proto">Prototipo</span>
+      </h2>
+      <p>2 jugadores.</p>
     </button>
 
-    <button class="card" (click)="open('duel-online')">
-      <h2>Duelo online</h2>
+    <!-- Duelo online -->
+    <button class="card card--beta" (click)="open('duel-online')">
+      <h2>
+        Duelo online
+        <span class="tag tag--beta">Beta</span>
+      </h2>
       <p>Juega con un amigo usando un código de sala.</p>
     </button>
   </div>
@@ -21,10 +34,22 @@
 
 <ng-template #gameView>
   <div class="game-container">
-    <button class="back-btn" (click)="backToMenu()">← Volver al menú</button>
+    <!-- Botón flotante SOLO para roguelike / local -->
+    <button
+      class="back-btn"
+      *ngIf="view === 'roguelike' || view === 'duel-local'"
+      (click)="backToMenu()"
+    >
+      ← Volver al menú
+    </button>
 
     <app-game *ngIf="view === 'roguelike'"></app-game>
     <app-duel-local *ngIf="view === 'duel-local'"></app-duel-local>
-    <app-duel-online *ngIf="view === 'duel-online'"></app-duel-online>
+
+    <!-- Duelo online: recibe evento para volver al menú -->
+    <app-duel-online
+      *ngIf="view === 'duel-online'"
+      (exitToMenu)="backToMenu()"
+    ></app-duel-online>
   </div>
 </ng-template>

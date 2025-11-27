@@ -14,14 +14,14 @@
 
       <!-- Selección de modo -->
       <div class="lobby-mode-select">
-  <h3>Modo de juego</h3>
-  <select [(ngModel)]="selectedMode">
-    <option value="normal">Normal (sin probabilidades)</option>
-    <option value="tactico">Táctico (con críticos y castigos)</option>
-    <option value="cinematic">Cinematográfico (eventos raros + narrativa)</option>
-    <option value="custom">Personalizado</option>
-  </select>
-</div>
+        <h3>Modo de juego</h3>
+        <select [(ngModel)]="selectedMode">
+          <option value="normal">Normal (sin probabilidades)</option>
+          <option value="tactico">Táctico (con críticos y castigos)</option>
+          <option value="cinematic">Cinematográfico (eventos raros + narrativa)</option>
+          <option value="custom">Personalizado</option>
+        </select>
+      </div>
 
       <!-- Configuración para modo personalizado -->
       <div class="custom-config" *ngIf="selectedMode === 'custom'">
@@ -114,7 +114,7 @@
   </div>
 </ng-container>
 
- <!-- Si estoy en juego, muestro el tablero -->
+<!-- Si estoy en juego, muestro el tablero -->
 <ng-template #gameTpl>
   <div class="duel-wrapper game-wrapper">
     <div class="top-info">

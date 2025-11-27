@@ -1,8 +1,20 @@
-/* Reset básico para quitar borde/blanco del body */
+html,
 body {
+  height: 100%;
   margin: 0;
+  padding: 0;
+}
+
+body {
+  overflow: hidden; /* sin scroll global; todo se adapta a la ventana */
   background: #050308;
 }
+
+app-root {
+  min-height: 100vh;
+  display: block;
+}
+
 
 /* Selector de modo GLOBAL del menú principal (los botones azules) */
 .mode-select {

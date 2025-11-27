@@ -5,14 +5,26 @@
 .duel-wrapper {
   min-height: 100vh;
   box-sizing: border-box;
-  padding: 16px;
+  padding: 12px 12px 72px; /* espacio para el footer del juego */
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; /* centra el LOBBY, pero luego game-wrapper lo pisa */
+  justify-content: flex-start;
   background: radial-gradient(circle at top, #20191b 0, #100c10 45%, #050308 100%);
   color: #f5e5c4;
   font-family: "Press Start 2P", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* Cuando está en modo juego, usamos .game-wrapper */
+.game-wrapper {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
 /* ===========================
@@ -240,30 +252,16 @@ button {
    CABECERA EN MODO JUEGO
    =========================== */
 
-.game-wrapper {
-  width: 100%;
-  max-width: 640px;
-  margin: 0 auto;
-  padding-top: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: flex-start; /* 👈 pisa el justify-content:center del padre */
-  color: #f5e5c4;
-  font-family: "Press Start 2P", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
-
 .top-info {
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;  /* botón a la derecha */
+  justify-content: space-between;
   gap: 8px;
   margin-bottom: 8px;
   font-size: 10px;
 }
 
-/* Contenedor izquierda (código + jugador) */
 .top-left {
   display: flex;
   flex-direction: column;
@@ -271,7 +269,6 @@ button {
   min-width: 0;
 }
 
-/* Línea del código de sala */
 .room-line {
   display: flex;
   align-items: center;
@@ -285,7 +282,6 @@ button {
   text-transform: uppercase;
 }
 
-/* 👉 MÁS GRANDE aquí */
 .room-code {
   font-size: 15px;
   letter-spacing: 1px;
@@ -295,7 +291,6 @@ button {
   border: 1px solid #facc6b;
 }
 
-/* Línea del jugador */
 .player-line {
   display: flex;
   align-items: center;
@@ -312,7 +307,6 @@ button {
   font-size: 11px;
 }
 
-/* Botón salir siempre a la derecha */
 .leave-btn {
   padding: 6px 10px;
   font-size: 9px;
@@ -321,7 +315,6 @@ button {
   color: #111827;
   white-space: nowrap;
 }
-
 
 /* ===========================
    RESPONSIVE - MOBILE
@@ -350,7 +343,7 @@ button {
     padding: 8px;
   }
 
-    .top-info {
+  .top-info {
     font-size: 9px;
     gap: 6px;
   }
@@ -369,5 +362,4 @@ button {
   .custom-config {
     padding: 8px 10px;
   }
-
 }

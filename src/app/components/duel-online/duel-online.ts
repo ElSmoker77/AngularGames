@@ -18,8 +18,8 @@ export class DuelOnlineComponent {
   playerName = '';
   roomCode = '';
 
-  // selección de modo
-  selectedMode: 'normal' | 'tactico' | 'custom' = 'tactico';
+  // selección de modo (incluimos cinematic)
+  selectedMode: 'normal' | 'tactico' | 'custom' | 'cinematic' = 'tactico';
 
   // valores para modo custom
   customLives = 3;
@@ -81,6 +81,7 @@ export class DuelOnlineComponent {
       customConfig = this.buildCustomConfig();
     }
 
+    // selectedMode puede ser normal / tactico / cinematic / custom
     this.socket.createRoom(name, this.selectedMode, customConfig);
   }
 
