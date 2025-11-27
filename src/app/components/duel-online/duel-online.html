@@ -13,14 +13,14 @@
       </label>
 
       <!-- Selección de modo -->
-      <div class="mode-select">
-        <h3>Modo de juego</h3>
-        <select [(ngModel)]="selectedMode">
-          <option value="normal">Normal (sin probabilidades)</option>
-          <option value="tactico">Táctico (con críticos y castigos)</option>
-          <option value="custom">Personalizado</option>
-        </select>
-      </div>
+      <div class="lobby-mode-select">
+  <h3>Modo de juego</h3>
+  <select [(ngModel)]="selectedMode">
+    <option value="normal">Normal (sin probabilidades)</option>
+    <option value="tactico">Táctico (con críticos y castigos)</option>
+    <option value="custom">Personalizado</option>
+  </select>
+</div>
 
       <!-- Configuración para modo personalizado -->
       <div class="custom-config" *ngIf="selectedMode === 'custom'">
@@ -113,21 +113,24 @@
   </div>
 </ng-container>
 
-<!-- Si estoy en juego, muestro el tablero -->
+ <!-- Si estoy en juego, muestro el tablero -->
 <ng-template #gameTpl>
   <div class="duel-wrapper game-wrapper">
     <div class="top-info">
-      <div class="left-info">
-        <p *ngIf="(roomId$ | async) as rid">
-          Código de sala: <strong>{{ rid }}</strong>
-        </p>
-        <p *ngIf="(playerId$ | async) as pid">
-          Jugador ID: <strong>{{ pid }}</strong>
-        </p>
+      <div class="top-left">
+        <div class="room-line" *ngIf="(roomId$ | async) as rid">
+          <span class="room-label">Código de sala</span>
+          <span class="room-code">{{ rid }}</span>
+        </div>
+
+        <div class="player-line" *ngIf="(playerId$ | async) as pid">
+          <span class="player-label">Jugador</span>
+          <span class="player-id">{{ pid }}</span>
+        </div>
       </div>
 
-      <button type="button" (click)="leaveGame()">
-        Cerrar sala / Volver al menú
+      <button type="button" class="leave-btn" (click)="leaveGame()">
+        ✕ Cerrar sala
       </button>
     </div>
 

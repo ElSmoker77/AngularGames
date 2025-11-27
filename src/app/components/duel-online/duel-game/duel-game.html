@@ -1,7 +1,6 @@
-<div class="duel-wrapper" *ngIf="state as s">
+<div class="duel-game-wrapper" *ngIf="state as s">
   <!-- Título -->
   <h2>Duelo online – Ronda {{ s.round }}</h2>
-
 
   <!-- SCOREBOARD -->
   <div class="scoreboard" *ngIf="s.players.length === 2">
@@ -59,8 +58,7 @@
             *ngFor="let h of getHearts(me)"
             class="heart"
             [class.empty]="!h"
-            >♥</span
-          >
+          >♥</span>
         </div>
       </div>
 
@@ -71,11 +69,9 @@
             *ngFor="let a of getAmmoSlots(me)"
             class="bullet"
             [class.empty]="!a"
-            >●</span
-          >
+          >●</span>
         </div>
       </div>
-      <!-- Puntos ya están en el marcador de arriba -->
     </div>
 
     <!-- RIVAL -->
@@ -101,8 +97,7 @@
             *ngFor="let h of getHearts(op)"
             class="heart"
             [class.empty]="!h"
-            >♥</span
-          >
+          >♥</span>
         </div>
       </div>
 
@@ -113,8 +108,7 @@
             *ngFor="let a of getAmmoSlots(op)"
             class="bullet"
             [class.empty]="!a"
-            >●</span
-          >
+          >●</span>
         </div>
       </div>
     </div>
@@ -124,14 +118,16 @@
   <div class="log-panel" *ngIf="s.log?.length">
     <h3>Log</h3>
     <ul>
-      <li *ngFor="let entry of s.log; let i = index"
-    [class.log-highlight]="isFromLastTurn(i)">
+      <li
+        *ngFor="let entry of s.log; let i = index"
+        [class.log-highlight]="isFromLastTurn(i)"
+      >
         <span [innerHTML]="formatLog(entry)"></span>
       </li>
     </ul>
   </div>
 
-  <!-- BOTONES: al final -->
+  <!-- BOTONES: footer -->
   <div class="actions-panel" *ngIf="!s.isRoundOver">
     <h3>Elegí tu acción</h3>
     <div class="buttons">
@@ -158,4 +154,5 @@
   </div>
 </div>
 
+<!-- Música de fondo -->
 <audio id="bg-music" src="assets/audio/bg-music.mp3" autoplay loop></audio>

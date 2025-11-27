@@ -1,25 +1,20 @@
-.duel-wrapper {
+.duel-game-wrapper {
   width: 100%;
   max-width: 600px;
-  margin: auto;
-  padding: 12px;
+  margin: 0 auto;
+  padding: 12px 12px 80px; /* espacio para footer de botones en mobile */
   text-align: center;
   font-family: "Press Start 2P", system-ui, sans-serif;
   color: #f5e5c4;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
+/* Título */
 h2 {
   font-size: 16px;
   margin-bottom: 4px;
   letter-spacing: 1px;
-}
-
-/* Aviso de audio */
-
-.audio-hint {
-  font-size: 9px;
-  margin-bottom: 6px;
-  opacity: 0.7;
 }
 
 /* SCOREBOARD Y TIMER */
@@ -32,6 +27,7 @@ h2 {
   justify-content: center;
   gap: 8px;
   font-size: 13px;
+  flex-wrap: wrap;
 }
 
 .score-name {
@@ -86,7 +82,7 @@ h2 {
 
 .players-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr)); /* SIEMPRE 2 columnas */
   gap: 8px;
   margin-top: 10px;
 }
@@ -204,11 +200,6 @@ h2 {
   }
 }
 
-.points {
-  margin-top: 6px;
-  font-size: 10px;
-}
-
 /* Tu card (azul/verde) */
 .my-card {
   background: #0b1b24;
@@ -237,7 +228,7 @@ h2 {
     display: flex;
     justify-content: center;
     gap: 6px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
   }
 
   button {
@@ -299,7 +290,7 @@ h2 {
   padding: 10px;
   border-radius: 10px;
   font-size: 12px;
-  max-height: 160px;
+  max-height: 260px;
   overflow-y: auto;
   animation: logAppear 0.2s ease-out;
 
@@ -318,11 +309,11 @@ h2 {
       margin-top: 3px;
     }
   }
-
 }
+
 /* Resaltar todas las acciones del último turno */
 .log-highlight {
-  background: rgba(250, 204, 21, 0.10);      /* amarillito suave */
+  background: rgba(250, 204, 21, 0.10);
   border-radius: 6px;
   padding: 4px 6px;
   box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.25);
@@ -336,7 +327,7 @@ h2 {
 
 /* Colores para nombres */
 .log-p1 {
-  color: #34d399; // tu
+  color: #34d399; // tú
 }
 
 .log-p2 {
@@ -346,6 +337,11 @@ h2 {
 /* Colores / iconos de acción en el log */
 .log-action {
   font-weight: 700;
+}
+
+.log-neutral {
+  color: #9ca3af;
+  opacity: 0.8;
 }
 
 .log-action-attack {
@@ -360,41 +356,94 @@ h2 {
   color: #facc15;
 }
 
-/* RESPONSIVE */
+/* ===========================
+   RESPONSIVE MOBILE
+   =========================== */
 
-@media (max-width: 480px) {
-  h2 { font-size: 14px; }
+@media (max-width: 768px) {
+  .duel-game-wrapper {
+    max-width: 100%;
+    padding: 10px 8px 78px; /* más espacio para el footer fijo */
+  }
 
-  .audio-hint {
-    font-size: 8px;
+  h2 {
+    font-size: 14px;
   }
 
   .scoreboard {
-    font-size: 12px;
+    font-size: 11px;
+  }
+
+  .timer-block {
+    font-size: 10px;
+    margin-bottom: 6px;
+  }
+
+  .status-text {
+    font-size: 10px;
+    margin-bottom: 6px;
   }
 
   .players-row {
-    grid-template-columns: 1fr 1fr;
-    gap: 5px;
+    grid-template-columns: repeat(2, minmax(0, 1fr)); /* sigue siendo 2 columnas */
+    gap: 6px;
   }
 
   .player-card {
     padding: 8px;
-    min-height: 130px;
-    font-size: 10px;
+    min-height: 140px;
+    font-size: 9px;
   }
 
   .action-badge {
     font-size: 8px;
+    padding: 3px 6px;
   }
 
-  .actions-panel button {
-    min-width: 95px;
-    font-size: 10px;
+  .action-icon {
+    font-size: 16px;
   }
 
   .log-panel {
     font-size: 11px;
+    max-height: 40vh; /* log se adapta al espacio disponible */
+  }
+
+  /* Footer fijo para los botones */
+  .actions-panel {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin-top: 0;
+    padding: 6px 10px 10px;
+    background: linear-gradient(to top, #050308 0%, #050308ee 65%, transparent 100%);
+    border-top: 1px solid #3b2c28;
+
+    h3 {
+      font-size: 10px;
+      margin-bottom: 4px;
+    }
+
+    .buttons {
+      width: 100%;
+      gap: 6px;
+    }
+
+    button {
+      flex: 1 1 0;
+      min-width: 0;
+      font-size: 10px;
+      padding: 7px 6px;
+    }
+  }
+
+  .gameover {
+    margin-top: 10px;
+
+    button {
+      width: 100%;
+    }
   }
 }
 

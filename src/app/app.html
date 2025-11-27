@@ -1,14 +1,17 @@
-<h1 style="text-align:center;">Angular Roguelike</h1>
+<div class="app-container">
+  <h1 class="app-title">Angular Roguelike</h1>
 
-<div class="mode-select">
-  <button (click)="mode = 'local'">Jugar local</button>
-  <button (click)="mode = 'online'">Jugar online</button>
-</div>
+  <div class="mode-select">
+    <button (click)="mode = 'local'">Jugar local</button>
+    <button (click)="mode = 'online'">Jugar online</button>
+  </div>
 
-<div *ngIf="mode === 'local'">
-  <app-duel-local></app-duel-local>
-</div>
+  <div *ngIf="mode === 'local'">
+    <app-duel-local></app-duel-local>
+  </div>
 
-<div *ngIf="mode === 'online'">
-  <app-duel-game></app-duel-game>
+  <div *ngIf="mode === 'online'">
+    <app-duel-online></app-duel-online>
+    <!-- 👆 importante: aquí debería ir el componente padre online, no app-duel-game directo -->
+  </div>
 </div>

@@ -1,1 +1,52 @@
-/* You can add global styles to this file, and also import other style files */
+/* Reset básico para quitar borde/blanco del body */
+body {
+  margin: 0;
+  background: #050308;
+}
+
+/* Selector de modo GLOBAL del menú principal (los botones azules) */
+.mode-select {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin: 1rem 0;
+
+  button {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: none;
+    background: #1976d2;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  button:hover {
+    filter: brightness(1.1);
+  }
+}
+
+/* Log global (ya lo tenías así) */
+.log-p1 {
+  color: #34d399; /* tu card */
+}
+
+.log-p2 {
+  color: #f87171; /* rival */
+}
+
+.log-action {
+  font-weight: 700;
+}
+
+.log-action-attack {
+  color: #f97373;
+}
+
+.log-action-reload {
+  color: #38bdf8;
+}
+
+.log-action-block {
+  color: #facc15;
+}

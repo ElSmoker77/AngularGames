@@ -88,16 +88,11 @@ export class DuelGameComponent implements OnInit, OnDestroy {
     return true;
   }
 
-  // maxAmmo real según config del server
-  get maxAmmo(): number {
-    return this.state?.config?.maxAmmo ?? this.maxAmmoDisplay;
-  }
-
   get canReload(): boolean {
     if (!this.canPlay) return false;
     const me = this.myPlayer;
     if (!me) return false;
-    return me.ammo < this.maxAmmo;
+    return me.ammo < this.maxAmmoDisplay;
   }
 
   // ---- timer ----
@@ -114,11 +109,7 @@ export class DuelGameComponent implements OnInit, OnDestroy {
     const left = this.timeLeft;
     if (left == null) return 0;
 
-    // si el server manda config, usamos su duración para la barra
-    const totalSecs = this.state.config?.turnDurationMs
-      ? this.state.config.turnDurationMs / 1000
-      : this.TURN_SECONDS;
-
+    const totalSecs = this.TURN_SECONDS;
     const pct = (left / totalSecs) * 100;
     if (pct < 0) return 0;
     if (pct > 100) return 100;
@@ -132,9 +123,8 @@ export class DuelGameComponent implements OnInit, OnDestroy {
   }
 
   getAmmoSlots(player: DuelPlayer): boolean[] {
-    const max = this.maxAmmo;
-    const filled = Math.min(player.ammo, max);
-    return Array.from({ length: max }, (_, i) => i < filled);
+    const filled = Math.min(player.ammo, this.maxAmmoDisplay);
+    return Array.from({ length: this.maxAmmoDisplay }, (_, i) => i < filled);
   }
 
   get statusText(): string {
@@ -218,7 +208,7 @@ export class DuelGameComponent implements OnInit, OnDestroy {
     }
   }
 
-  // ---- Log coloreado (nombres + acciones) ----
+    // ---- Log coloreado (nombres + acciones) ----
 
   formatLog(entry: any): SafeHtml {
     let text = String(entry ?? '');
@@ -245,6 +235,12 @@ export class DuelGameComponent implements OnInit, OnDestroy {
       }
     }
 
+    // 👇 Mensaje neutro: "ha elegido su acción"
+    text = text.replace(
+      /(ha elegido su acción\.?)/gi,
+      '<span class="log-neutral">$1</span>'
+    );
+
     // colorear / icono para acción (palabras clave)
     text = text
       .replace(/recarga/gi,          '<span class="log-action log-action-reload">🔄 recarga</span>')
@@ -259,22 +255,22 @@ export class DuelGameComponent implements OnInit, OnDestroy {
   }
 
 
-/** Marca cuáles líneas del log pertenecen al último turno */
-isFromLastTurn(index: number): boolean {
-  if (!this.state?.log) return false;
+  /** Marca cuáles líneas del log pertenecen al último turno */
+  isFromLastTurn(index: number): boolean {
+    if (!this.state?.log) return false;
 
-  const log = this.state.log;
-  const marker = "Nueva elección de acciones"; // 👈 separador de turnos
+    const log = this.state.log;
+    const marker = 'Nueva elección de acciones'; // separador de turnos
 
-  // Buscar desde abajo hacia arriba para encontrar el inicio del turno anterior
-  let lastMarkerIndex = log.findIndex(entry =>
-    entry.includes(marker)
-  );
+    // buscamos el primer "Nueva elección..." desde arriba (log[0] es lo más nuevo)
+    const lastMarkerIndex = log.findIndex(entry =>
+      typeof entry === 'string' && entry.includes(marker)
+    );
 
-  // Si no hay marcador, no resaltamos nada
-  if (lastMarkerIndex === -1) return false;
+    // si no hay marcador, no resaltamos nada
+    if (lastMarkerIndex === -1) return false;
 
-  // Todo arriba del marcador pertenece al último turno
-  return index < lastMarkerIndex;
-}
+    // todo lo que está por encima del marcador (índices menores) es del último turno
+    return index < lastMarkerIndex;
+  }
 }
